@@ -27,8 +27,11 @@ function makeMapMarkers(coordinates){
 // Initialize Map
 var initMap = function() {
 	// Map configuration
+	var places = ko.observableArray(model.favoritePlaces);
+	ko.applyBindings({places: places});
+
 	var mapSetup = {
-		center: new google.maps.LatLng(model.favoritePlaces[4]),
+		center: new google.maps.LatLng(places()[4]),
 		zoom: 11,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
@@ -38,7 +41,7 @@ var initMap = function() {
 	var map = new google.maps.Map($('#map')[0], mapSetup);
 
 	// Place the initial markers
-	var markers = makeMapMarkers(model.favoritePlaces);
+	var markers = makeMapMarkers(places());
 
 	// Place markers
 	setMapMarkers(map, markers);
@@ -60,18 +63,19 @@ var initMap = function() {
 		// Delete all markers stored
   		markers = [];
 
-  		// This will store the coordinates received from google
-  		coordinates = [];
+  		// This will store the coordinates and other information
+  		// received from google
+  		places([]);
 
 		for(var i = 0; i < searchBox.getPlaces().length; i++){
-			coordinates.push({
-					lat: searchBox.getPlaces()[i].geometry.location.lat(),
-					lng: searchBox.getPlaces()[i].geometry.location.lng()
-				});
+			places.push({
+				name: searchBox.getPlaces()[i].name,
+				lat: searchBox.getPlaces()[i].geometry.location.lat(),
+				lng: searchBox.getPlaces()[i].geometry.location.lng()
+			});
 		}
-
 		// Make markers
-		markers = makeMapMarkers(coordinates);
+		markers = makeMapMarkers(places());
 		// Place markers
 		setMapMarkers(map, markers);
 	});

@@ -12,10 +12,10 @@
 </head>
   <body>
   	<input type="text" id="searchBox">
-    <table data-bind="foreach: favoritePlaces">
-      <tr>
-        <td data-bind="text: $data.name"></td>
-      </tr>
+    <table data-bind="foreach: places">
+        <tr>
+          <td data-bind="text: $data.name"></td>
+        </tr>
     </table>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ogndnf3pM_oALAnDIio_IkZuUt-qrC4&callback=initMap&libraries=places"

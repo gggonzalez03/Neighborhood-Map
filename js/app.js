@@ -30,8 +30,7 @@ var model = {
 
 
 var viewModel = function(){
-	
-	this.favoritePlaces = model.favoritePlaces;
-};
+	var self = this;
 
-ko.applyBindings(new viewModel());
+	self.favoritePlaces = model.favoritePlaces;
+};
