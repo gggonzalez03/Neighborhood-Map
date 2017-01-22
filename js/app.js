@@ -59,6 +59,7 @@ var initMap = function() {
 
 var viewModel = function(){
 	
+	this.favoritePlaces = model.favoritePlaces;
 };
 
 ko.applyBindings(new viewModel());
