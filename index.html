@@ -12,7 +12,7 @@
 </head>
   <body>
   	<input type="text" id="searchBox">
-    <table data-bind="foreach: places">
+    <table id="searchresult" data-bind="foreach: places">
         <tr>
           <td data-bind="text: $data.name, click: $parent.showPlaceLocation"></td>
         </tr>

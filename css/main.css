@@ -7,10 +7,16 @@ html, body
 
 #map
 {
-	height: 100%;
+	height: 80%;
 }
 
 #searchBox {
   width: 100%;
-  height: 25px;
+  height: 5%;
+}
+
+#searchresult{
+   overflow-y:scroll;
+   height:15%;
+   display:block;
 }
