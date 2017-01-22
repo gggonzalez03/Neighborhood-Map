@@ -12,6 +12,11 @@
 </head>
   <body>
   	<input type="text" id="autocomplete">
+    <table data-bind="foreach: model.favoritePlaces">
+      <tr>
+        <td data-bind="text: $data.lat"></td>
+      </tr>
+    </table>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ogndnf3pM_oALAnDIio_IkZuUt-qrC4&callback=initMap&libraries=places"
     async defer></script>
