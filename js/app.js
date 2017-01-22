@@ -1,11 +1,31 @@
 var model = {
 	favoritePlaces: [
-		{lat: 37.7831, lng: -122.4039},
-		//(c) Google
-		{lat: -31.563910, lng: 147.154312},
-        {lat: -33.718234, lng: 150.363181},
-        {lat: -33.727111, lng: 150.371124},
-        {lat: -33.848588, lng: 151.209834}
+		//San Jose
+		{
+			name: "San Jose",
+			lat: 37.3382082,
+			lng: -122.0450548
+		},
+		{
+			name: "De Anza College",
+			lat: 37.31953960000001,
+			lng: -122.04447070000003
+		},
+        {
+        	name: "Cathedral of Faith",
+        	lat: 37.2920879,
+        	lng: -121.87471370000003
+        },
+        {
+        	name: "Children's Discovery Museum of San Jose",
+        	lat: 37.32686159999999,
+        	lng: -121.89209349999999
+        },
+        {
+        	name: "Intel Museum",
+        	lat: 37.3875909,
+        	lng: -121.9637869
+        }
 	]
 };
 
@@ -14,7 +34,7 @@ var model = {
 var initMap = function() {
 	var mapSetup = {
 		center: new google.maps.LatLng(model.favoritePlaces[0]),
-		zoom: 15,
+		zoom: 11,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	var map = new google.maps.Map(document.getElementById('map'), mapSetup);
