@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
   <body>
-  	<input type="text" id="autocomplete">
+  	<input type="text" id="searchBox">
     <table data-bind="foreach: favoritePlaces">
       <tr>
         <td data-bind="text: $data.name"></td>
@@ -22,5 +22,6 @@
     async defer></script>
     <script type="text/javascript" src="js/knockout-3.4.1.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
   </body>
 </html>
