@@ -1,5 +1,6 @@
 // Takes an array of Marker objects
 function setMapMarkers(map, markers) {
+
     for (var i = 0; i < markers.length; i++) {
     	markers[i].setMap(map);
     }
@@ -14,11 +15,19 @@ function clearMapMarkers(markers){
 function makeMapMarkers(coordinates){
 
 	var markers = [];
+	var infoWindow = new google.maps.InfoWindow();
 
 	for(var i = 0; i < coordinates.length; i++){
 		markers.push(new google.maps.Marker({
 			position: coordinates[i]
 		}));
+
+		(function (marker, coordinates) {
+    		marker.addListener('click', function(){
+    			infoWindow.setContent(coordinates.name);
+		    	infoWindow.open(map, marker);
+		    })
+	    })(markers[i], coordinates[i]);
 	}
 
 	return markers;
