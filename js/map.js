@@ -28,7 +28,18 @@ function makeMapMarkers(coordinates){
 var initMap = function() {
 	// Map configuration
 	var places = ko.observableArray(model.favoritePlaces);
-	ko.applyBindings({places: places});
+	var showPlaceLocation = function(placeInfo){
+
+		var placeInfo = [placeInfo];
+		clearMapMarkers(markers);
+		markers = makeMapMarkers(placeInfo);
+		setMapMarkers(map, markers);
+	};
+
+	ko.applyBindings({
+		places: places,
+		showPlaceLocation: showPlaceLocation
+	});
 
 	var mapSetup = {
 		center: new google.maps.LatLng(places()[4]),
