@@ -19,7 +19,8 @@ function makeMapMarkers(coordinates){
 
 	for(var i = 0; i < coordinates.length; i++){
 		markers.push(new google.maps.Marker({
-			position: coordinates[i]
+			position: coordinates[i],
+			animation: google.maps.Animation.DROP
 		}));
 
 		(function (marker, coordinates) {
