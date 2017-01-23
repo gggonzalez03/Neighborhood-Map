@@ -30,7 +30,5 @@ var model = {
 
 
 var viewModel = function(){
-	var self = this;
-
-	self.favoritePlaces = model.favoritePlaces;
+	
 };
