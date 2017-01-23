@@ -6,6 +6,7 @@ function setMapMarkers(map, markers) {
     }
 }
 
+// Clears all the markers on the map
 function clearMapMarkers(markers){
 	setMapMarkers(null, markers);
 }
@@ -17,17 +18,24 @@ function makeMapMarkers(coordinates){
 	var markers = [];
 	var infoWindow = new google.maps.InfoWindow();
 
+	// This will create and store markers in markers array variable
+	// Each marker will be created with event listeners on click
 	for(var i = 0; i < coordinates.length; i++){
 		markers.push(new google.maps.Marker({
 			position: coordinates[i],
 			animation: google.maps.Animation.DROP
 		}));
 
+		// Sets the listener on current i in the interation
 		(function (marker, coordinates) {
     		marker.addListener('click', function(){
     			infoWindow.setContent(coordinates.name);
 		    	infoWindow.open(map, marker);
+
+		    	// Make the marker bounce on tap or click
 		    	marker.setAnimation(google.maps.Animation.BOUNCE)
+
+		    	// Sets how long the marker should bounce
 		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
 		    })
 	    })(markers[i], coordinates[i]);
@@ -40,19 +48,23 @@ function makeMapMarkers(coordinates){
 var initMap = function() {
 	// Map configuration
 	var places = ko.observableArray(model.favoritePlaces);
-	var showPlaceLocation = function(placeInfo){
 
+	// Drops the marker of the place tapped or clicked
+	// from the list returned by the searchBox
+	var showPlaceLocation = function(placeInfo){
 		var placeInfo = [placeInfo];
 		clearMapMarkers(markers);
 		markers = makeMapMarkers(placeInfo);
 		setMapMarkers(map, markers);
 	};
 
+	// Apply the bindings
 	ko.applyBindings({
 		places: places,
 		showPlaceLocation: showPlaceLocation
 	});
 
+	// Map initial configuration
 	var mapSetup = {
 		center: new google.maps.LatLng(places()[4]),
 		zoom: 11,
