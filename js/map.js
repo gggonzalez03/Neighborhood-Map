@@ -27,6 +27,8 @@ function makeMapMarkers(coordinates){
     		marker.addListener('click', function(){
     			infoWindow.setContent(coordinates.name);
 		    	infoWindow.open(map, marker);
+		    	marker.setAnimation(google.maps.Animation.BOUNCE)
+		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
 		    })
 	    })(markers[i], coordinates[i]);
 	}
