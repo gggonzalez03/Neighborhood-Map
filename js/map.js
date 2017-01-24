@@ -29,7 +29,9 @@ function makeMapMarkers(coordinates){
 		// Sets the listener on current i in the interation
 		(function (marker, coordinates) {
     		marker.addListener('click', function(){
-    			infoWindow.setContent(coordinates.name);
+    			infoWindow.setContent(
+    				"<h5>"+ coordinates.name +"</h5>"
+    				+ "<p>" + coordinates.address + "</p>");
 		    	infoWindow.open(map, marker);
 
 		    	// Make the marker bounce on tap or click
@@ -105,6 +107,7 @@ var initMap = function() {
 		for(var i = 0; i < searchBox.getPlaces().length; i++){
 			places.push({
 				name: searchBox.getPlaces()[i].name,
+				address: searchBox.getPlaces()[i].formatted_address,
 				lat: searchBox.getPlaces()[i].geometry.location.lat(),
 				lng: searchBox.getPlaces()[i].geometry.location.lng()
 			});
