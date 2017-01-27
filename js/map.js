@@ -67,22 +67,30 @@ function yelp(){
 		oauth_version : '1.0',
 		callback: 'cb',// This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
 		term : 'cafe',
-		location : 'Mountain+View'
+		location : 'San+Jose'
 	};
 
-	var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, YELP_KEY_SECRET, YELP_TOKEN_SECRET);
+	var encodedSignature = oauthSignature.generate(
+		'GET',
+		yelp_url,
+		parameters,
+		YELP_KEY_SECRET,
+		YELP_TOKEN_SECRET
+	);
+
 	parameters.oauth_signature = encodedSignature;
+
 
 	$.ajax({
 		url: yelp_url,
 		data: parameters,
 		dataType: "jsonp",
 		cache: true,
-		success: function(results){
-			console.log(results);
+		success: function(result){
+			console.log(result);
 		},
-        error: function (er) {
-            console.log(er);
+        error: function (e){
+            console.log(e);
         }
 	});
 }
