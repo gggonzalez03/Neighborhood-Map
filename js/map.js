@@ -46,22 +46,45 @@ function makeMapMarkers(coordinates){
 	return markers;
 }
 
+function nonce_generate() {
+	return (Math.floor(Math.random() * 1e12).toString());
+}
+
 function yelp(){
+	var yelp_url = 'http://api.yelp.com/v2/search';
+
+	var YELP_KEY = "00UzGxeokgnv1kg3Q2xSQg";
+	var YELP_KEY_SECRET = "QlYt9dG4gXPO77kNXs7GNi-ekaI";
+	var YELP_TOKEN = "EjlANkGnpX8SuCM8m2fphVSJaiLrgHgP";
+	var YELP_TOKEN_SECRET = "7zk-kykQTklYu612aqdwkZNRQgo";
+
+	var parameters = {
+		oauth_consumer_key: YELP_KEY,
+		oauth_token: YELP_TOKEN,
+		oauth_nonce: nonce_generate(),
+		oauth_timestamp: Math.floor(Date.now()/1000),
+		oauth_signature_method: 'HMAC-SHA1',
+		oauth_version : '1.0',
+		callback: 'cb',// This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
+		term : 'cafe',
+		location : '1032+Castro+Street%2C+Mountain+View',
+		cll : '37.385083%2C-122.08460200000002'
+	};
+
+	var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, YELP_KEY_SECRET, YELP_TOKEN_SECRET);
+	parameters.oauth_signature = encodedSignature;
+
 	$.ajax({
-		method: "POST",
-		contenttype: "application/x-www-form-urlencoded",
-		crossDomain: true,
-		url: "https://api.yelp.com/oauth2/token?grant_type=client_credentials&client_id=-9N4xZv9zzd0LdbKhVO7DQ&client_secret=HaI9hnvFtRqjUSUg0933FwD82EfdMtsEzRJgWkWyxyFqNiOWyCo2GtSBCRKqvpgo",
-		dataType: "json",
-		cache: false,
-		headers: {
-			"Access-Control-Allow-Origin": "*",
-			"Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTIONS",
-			"Access-Control-Allow-Headers": "accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token"
+		url: yelp_url,
+		data: parameters,
+		dataType: "jsonp",
+		cache: true,
+		success: function(results){
+			console.log(results);
 		},
-		success: function(data){
-			console.log(data);
-		}
+        error: function (er) {
+            console.log(er);
+        }
 	});
 }
 
