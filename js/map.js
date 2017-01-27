@@ -46,6 +46,25 @@ function makeMapMarkers(coordinates){
 	return markers;
 }
 
+function yelp(){
+	$.ajax({
+		method: "POST",
+		contenttype: "application/x-www-form-urlencoded",
+		crossDomain: true,
+		url: "https://api.yelp.com/oauth2/token?grant_type=client_credentials&client_id=-9N4xZv9zzd0LdbKhVO7DQ&client_secret=HaI9hnvFtRqjUSUg0933FwD82EfdMtsEzRJgWkWyxyFqNiOWyCo2GtSBCRKqvpgo",
+		dataType: "json",
+		cache: false,
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTIONS",
+			"Access-Control-Allow-Headers": "accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token"
+		},
+		success: function(data){
+			console.log(data);
+		}
+	});
+}
+
 // Initialize Map
 var initMap = function() {
 	// Map configuration
@@ -117,4 +136,6 @@ var initMap = function() {
 		// Place markers
 		setMapMarkers(map, markers);
 	});
+
+	yelp();
 };
