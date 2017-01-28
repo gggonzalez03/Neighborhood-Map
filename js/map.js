@@ -50,7 +50,7 @@ function nonce_generate() {
 	return (Math.floor(Math.random() * 1e12).toString());
 }
 
-function yelp(){
+function yelp(map){
 	var yelp_url = 'http://api.yelp.com/v2/search';
 
 	var YELP_KEY = "00UzGxeokgnv1kg3Q2xSQg";
@@ -66,10 +66,11 @@ function yelp(){
 		oauth_signature_method: 'HMAC-SHA1',
 		oauth_version : '1.0',
 		callback: 'cb',// This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
-		term : 'cafe',
+		term : 'pizza',
 		location : 'San+Jose'
 	};
 
+	
 	var encodedSignature = oauthSignature.generate(
 		'GET',
 		yelp_url,
@@ -80,6 +81,8 @@ function yelp(){
 
 	parameters.oauth_signature = encodedSignature;
 
+	var coordinates = [];
+
 
 	$.ajax({
 		url: yelp_url,
@@ -87,7 +90,17 @@ function yelp(){
 		dataType: "jsonp",
 		cache: true,
 		success: function(result){
-			console.log(result);
+			for(var i = 0; i < result.businesses.length; i++){
+				coordinates.push({
+					lat: result.businesses[i].location.coordinate.latitude,
+					lng: result.businesses[i].location.coordinate.longitude
+				});
+			}
+
+			console.log(coordinates);
+			var markers = makeMapMarkers(coordinates);
+
+			setMapMarkers(map, markers);
 		},
         error: function (e){
             console.log(e);
@@ -167,5 +180,5 @@ var initMap = function() {
 		setMapMarkers(map, markers);
 	});
 
-	yelp();
+	yelp(map);
 };
