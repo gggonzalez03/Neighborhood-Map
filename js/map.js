@@ -82,32 +82,18 @@ function yelp(map, term, centerCoordinate){
 
 	parameters.oauth_signature = encodedSignature;
 
-	var coordinates = [];
 
-
-	$.ajax({
+	var promise = Promise.resolve($.ajax({
 		url: yelp_url,
 		data: parameters,
 		dataType: "jsonp",
 		cache: true,
-		success: function(result){
-			for(var i = 0; i < result.businesses.length; i++){
-				coordinates.push({
-					name	: result.businesses[i].name,
-					address : result.businesses[i].location.address[0],
-					lat 	: result.businesses[i].location.coordinate.latitude,
-					lng 	: result.businesses[i].location.coordinate.longitude
-				});
-			}
-
-			markers = makeMapMarkers(coordinates);
-
-			setMapMarkers(map, markers);
-		},
         error: function (e){
             console.log(e);
         }
-	});
+	}));
+
+	return promise;
 }
 
 // Initialize Map
@@ -181,10 +167,23 @@ var initMap = function() {
 		//markers = makeMapMarkers(places());
 		// Place markers
 		//setMapMarkers(map, markers);
-		yelp(map, $('#searchBox').val(),
+		var promise = yelp(map, $('#searchBox').val(),
 			{
 				lat: map.getCenter().lat(),
 				lng: map.getCenter().lng()
 			});
+
+		promise.then(function(result){
+			for(var i = 0; i < result.businesses.length; i++){
+				places.push({
+					name	: result.businesses[i].name,
+					address : result.businesses[i].location.address[0],
+					lat 	: result.businesses[i].location.coordinate.latitude,
+					lng 	: result.businesses[i].location.coordinate.longitude
+				});
+			}
+			markers = makeMapMarkers(places());
+			setMapMarkers(map, markers);
+		});
 	});
 };
