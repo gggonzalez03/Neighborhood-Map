@@ -50,7 +50,7 @@ function nonce_generate() {
 	return (Math.floor(Math.random() * 1e12).toString());
 }
 
-function yelp(map, term){
+function yelp(map, term, centerCoordinate){
 	var yelp_url = 'http://api.yelp.com/v2/search';
 
 	var YELP_KEY = "00UzGxeokgnv1kg3Q2xSQg";
@@ -67,7 +67,8 @@ function yelp(map, term){
 		oauth_version : '1.0',
 		callback: 'cb',// This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
 		term : term,
-		location : 'San+Jose'
+		ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
+		radius: 20000
 	};
 
 	
@@ -99,7 +100,6 @@ function yelp(map, term){
 				});
 			}
 
-			console.log(result);
 			markers = makeMapMarkers(coordinates);
 
 			setMapMarkers(map, markers);
@@ -176,10 +176,15 @@ var initMap = function() {
 				lng: searchBox.getPlaces()[i].geometry.location.lng()
 			});
 		}
+
 		// Make markers
-		markers = makeMapMarkers(places());
+		//markers = makeMapMarkers(places());
 		// Place markers
-		setMapMarkers(map, markers);
-		yelp(map, "pizza");
+		//setMapMarkers(map, markers);
+		yelp(map, $('#searchBox').val(),
+			{
+				lat: map.getCenter().lat(),
+				lng: map.getCenter().lng()
+			});
 	});
 };
