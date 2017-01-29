@@ -154,14 +154,14 @@ var initMap = function() {
   		// received from google
   		places([]);
 
-		for(var i = 0; i < searchBox.getPlaces().length; i++){
+		/*for(var i = 0; i < searchBox.getPlaces().length; i++){
 			places.push({
 				name: searchBox.getPlaces()[i].name,
 				address: searchBox.getPlaces()[i].formatted_address,
 				lat: searchBox.getPlaces()[i].geometry.location.lat(),
 				lng: searchBox.getPlaces()[i].geometry.location.lng()
 			});
-		}
+		}*/
 
 		// Make markers
 		//markers = makeMapMarkers(places());
@@ -177,7 +177,11 @@ var initMap = function() {
 			for(var i = 0; i < result.businesses.length; i++){
 				places.push({
 					name	: result.businesses[i].name,
-					address : result.businesses[i].location.address[0],
+					address : result.businesses[i].location.address[0]
+							+ ", " + result.businesses[i].location.city
+							+ ", " + result.businesses[i].location.state_code
+							+ ", " + result.businesses[i].location.postal_code
+							+ ", " + result.businesses[i].location.country_code,
 					lat 	: result.businesses[i].location.coordinate.latitude,
 					lng 	: result.businesses[i].location.coordinate.longitude
 				});
