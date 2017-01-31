@@ -96,6 +96,31 @@ function yelp(map, term, centerCoordinate){
 	return promise;
 }
 
+function foursquareAutocomplete(){
+	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
+
+	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
+	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
+
+	var promise = Promise.resolve($.ajax({
+		url: fs_url,
+		data: {
+			client_id: CLIENT_ID,
+			client_secret: CLIENT_SECRET,
+			near: "Chicago, IL",
+			query: "foursqu",
+			v: "20170101"
+		},
+		dataType: "jsonp",
+		cache: true,
+        error: function (e){
+            console.log(e);
+        }
+	}));
+
+	return promise;
+}
+
 // Initialize Map
 var initMap = function() {
 	// Map configuration
