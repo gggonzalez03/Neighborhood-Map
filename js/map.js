@@ -96,7 +96,7 @@ function yelp(map, term, centerCoordinate){
 	return promise;
 }
 
-function foursquareAutocomplete(){
+function foursquareAutocomplete(term, centerCoordinate){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
@@ -107,8 +107,8 @@ function foursquareAutocomplete(){
 		data: {
 			client_id: CLIENT_ID,
 			client_secret: CLIENT_SECRET,
-			near: "Chicago, IL",
-			query: "foursqu",
+			ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
+			query: term,
 			v: "20170101"
 		},
 		dataType: "jsonp",
