@@ -46,7 +46,7 @@ function makeMapMarkers(coordinates){
 	return markers;
 }
 
-function foursquareAutocomplete(term, centerCoordinate){
+function foursquareAutocomplete(query, centerCoordinate){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
@@ -58,7 +58,36 @@ function foursquareAutocomplete(term, centerCoordinate){
 			client_id: CLIENT_ID,
 			client_secret: CLIENT_SECRET,
 			ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
-			query: term,
+			query: query,
+			radius: 10000,
+			limit: 10,
+			v: "20170101"
+		},
+		dataType: "jsonp",
+		cache: true,
+        error: function (e){
+            console.log(e);
+        }
+	}));
+
+	return promise;
+}
+
+function foursquareSearch(query, centerCoordinate){
+	fs_url = "https://api.foursquare.com/v2/venues/search";
+
+	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
+	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
+
+	var promise = Promise.resolve($.ajax({
+		url: fs_url,
+		data: {
+			client_id: CLIENT_ID,
+			client_secret: CLIENT_SECRET,
+			ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
+			query: query,
+			radius: 10000,
+			limit: 10,
 			v: "20170101"
 		},
 		dataType: "jsonp",
@@ -108,12 +137,36 @@ var initMap = function() {
 	// Place markers
 	setMapMarkers(map, markers);
 
-	$("#foursquaresearch").keyup(function(){
+	$("#foursquaresearch").keyup(function(key){
 		//console.log(model.favoritePlaces[0]);
 
 		if(this.value == ""){
 			places([]);
 			return null;
+		}
+
+		if(key.which == 13){
+			foursquareSearch(this.value, model.favoritePlaces[0]).then(function(data){
+
+				places([]);
+
+				for(var i = 0; i < data.response.venues.length; i++){
+					places.push({
+						name	: data.response.venues[i].name,
+						address : data.response.venues[i].location.address
+								+ ", " + data.response.venues[i].location.city
+								+ ", " + data.response.venues[i].location.state
+								+ ", " + data.response.venues[i].location.postalCode
+								+ ", " + data.response.venues[i].location.country,
+						lat 	: data.response.venues[i].location.lat,
+						lng 	: data.response.venues[i].location.lng
+					});
+				}
+				clearMapMarkers(markers);
+				markers = makeMapMarkers(places());
+				setMapMarkers(map, markers);
+
+			});
 		}
 
 		var promise = foursquareAutocomplete(this.value, model.favoritePlaces[0]);
