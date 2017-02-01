@@ -7,7 +7,7 @@ html, body
 
 #map
 {
-	height: 80%;
+	height: 80vh;
 }
 
 #searchBox {
@@ -17,6 +17,11 @@ html, body
 
 #searchresult{
    overflow-y:scroll;
-   height:15%;
+   height:20vh;
    display:block;
+   margin: 0px;
+}
+
+table.table.table-hover td{
+	width: 108vw;
 }
