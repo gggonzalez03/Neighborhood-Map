@@ -7,21 +7,20 @@ html, body
 
 #map
 {
-	height: 80vh;
+	height: 100vh;
 }
 
 #searchBox {
   width: 100%;
-  height: 5%;
+  height: 5vh;
 }
 
 #searchresult{
    overflow-y:scroll;
-   height:20vh;
+   height: 95vh;
    display:block;
-   margin: 0px;
 }
 
 table.table.table-hover td{
-	width: 108vw;
+	width: 100vw;
 }
