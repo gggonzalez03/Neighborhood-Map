@@ -1,17 +1,17 @@
 var model = {
 	favoritePlaces: [
-		{
-			name: "San Jose",
-			address: "San Jose, CA, USA",
-			lat: 37.3382082,
-			lng: -122.0450548
-		},
-		{
-			name: "De Anza College",
-			address: "21250 Stevens Creek Boulevard, Cupertino, CA, United States",
-			lat: 37.31953960000001,
-			lng: -122.04447070000003
-		},
+	{
+		name: "San Jose",
+		address: "San Jose, CA, USA",
+		lat: 37.3382082,
+		lng: -122.0450548
+	},
+	{
+		name: "De Anza College",
+		address: "21250 Stevens Creek Boulevard, Cupertino, CA, United States",
+		lat: 37.31953960000001,
+		lng: -122.04447070000003
+	},
         {
         	name: "Cathedral of Faith",
         	address: "2315 Canoas Garden Avenue, San Jose, CA, United States",

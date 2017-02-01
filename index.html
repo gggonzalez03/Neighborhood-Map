@@ -11,12 +11,14 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
   <body>
-  	<input type="text" id="searchBox">
-    <table id="searchresult" data-bind="foreach: places">
+    <div class="form-group">
+      <input type="text" class="form-control" id="foursquaresearch" placeholder="Search">
+      <table id="searchresult" data-bind="foreach: places">
         <tr>
           <td data-bind="text: $data.name, click: $parent.showPlaceLocation"></td>
         </tr>
-    </table>
+      </table>
+    </div>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ogndnf3pM_oALAnDIio_IkZuUt-qrC4&callback=initMap&libraries=places"
     async defer></script>

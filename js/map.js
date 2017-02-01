@@ -158,61 +158,32 @@ var initMap = function() {
 	// Place markers
 	setMapMarkers(map, markers);
 
-    // This will make the input a searchBox
-	var searchBox = new google.maps.places.SearchBox($('#searchBox')[0]);
+	$("#foursquaresearch").keyup(function(){
+		//console.log(model.favoritePlaces[0]);
 
-	// Set the searchBox search bias whenever the map bounds change
-	map.addListener('bounds_changed', function() {
-		searchBox.setBounds(map.getBounds());
-	});
+		if(this.value == ""){
+			places([]);
+			return null;
+		}
 
-	// Change the markers whenever a search is done
-	searchBox.addListener('places_changed', function() {
+		var promise = foursquareAutocomplete(this.value, model.favoritePlaces[0]);
 
-		// Clear markers on the map
-		clearMapMarkers(markers);
+		promise.then(function(data){
 
-		// Delete all markers stored
-  		markers = [];
+			places([]);
 
-  		// This will store the coordinates and other information
-  		// received from google
-  		places([]);
-
-		/*for(var i = 0; i < searchBox.getPlaces().length; i++){
-			places.push({
-				name: searchBox.getPlaces()[i].name,
-				address: searchBox.getPlaces()[i].formatted_address,
-				lat: searchBox.getPlaces()[i].geometry.location.lat(),
-				lng: searchBox.getPlaces()[i].geometry.location.lng()
-			});
-		}*/
-
-		// Make markers
-		//markers = makeMapMarkers(places());
-		// Place markers
-		//setMapMarkers(map, markers);
-		var promise = yelp(map, $('#searchBox').val(),
-			{
-				lat: map.getCenter().lat(),
-				lng: map.getCenter().lng()
-			});
-
-		promise.then(function(result){
-			for(var i = 0; i < result.businesses.length; i++){
+			for(var i = 0; i < data.response.minivenues.length; i++){
 				places.push({
-					name	: result.businesses[i].name,
-					address : result.businesses[i].location.address[0]
-							+ ", " + result.businesses[i].location.city
-							+ ", " + result.businesses[i].location.state_code
-							+ ", " + result.businesses[i].location.postal_code
-							+ ", " + result.businesses[i].location.country_code,
-					lat 	: result.businesses[i].location.coordinate.latitude,
-					lng 	: result.businesses[i].location.coordinate.longitude
+					name	: data.response.minivenues[i].name,
+					address : data.response.minivenues[i].location.address
+							+ ", " + data.response.minivenues[i].location.city
+							+ ", " + data.response.minivenues[i].location.state
+							+ ", " + data.response.minivenues[i].location.postalCode
+							+ ", " + data.response.minivenues[i].location.country,
+					lat 	: data.response.minivenues[i].location.lat,
+					lng 	: data.response.minivenues[i].location.lng
 				});
 			}
-			markers = makeMapMarkers(places());
-			setMapMarkers(map, markers);
 		});
 	});
 };
