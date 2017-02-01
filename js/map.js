@@ -46,56 +46,6 @@ function makeMapMarkers(coordinates){
 	return markers;
 }
 
-function nonce_generate() {
-	return (Math.floor(Math.random() * 1e12).toString());
-}
-
-function yelp(map, term, centerCoordinate){
-	var yelp_url = 'http://api.yelp.com/v2/search';
-
-	var YELP_KEY = "00UzGxeokgnv1kg3Q2xSQg";
-	var YELP_KEY_SECRET = "QlYt9dG4gXPO77kNXs7GNi-ekaI";
-	var YELP_TOKEN = "EjlANkGnpX8SuCM8m2fphVSJaiLrgHgP";
-	var YELP_TOKEN_SECRET = "7zk-kykQTklYu612aqdwkZNRQgo";
-
-	var parameters = {
-		oauth_consumer_key: YELP_KEY,
-		oauth_token: YELP_TOKEN,
-		oauth_nonce: nonce_generate(),
-		oauth_timestamp: Math.floor(Date.now()/1000),
-		oauth_signature_method: 'HMAC-SHA1',
-		oauth_version : '1.0',
-		callback: 'cb',// This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
-		term : term,
-		ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
-		radius: 20000
-	};
-
-	
-	var encodedSignature = oauthSignature.generate(
-		'GET',
-		yelp_url,
-		parameters,
-		YELP_KEY_SECRET,
-		YELP_TOKEN_SECRET
-	);
-
-	parameters.oauth_signature = encodedSignature;
-
-
-	var promise = Promise.resolve($.ajax({
-		url: yelp_url,
-		data: parameters,
-		dataType: "jsonp",
-		cache: true,
-        error: function (e){
-            console.log(e);
-        }
-	}));
-
-	return promise;
-}
-
 function foursquareAutocomplete(term, centerCoordinate){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
