@@ -48,13 +48,52 @@ function makeMapMarkers(coordinates){
 	return markers;
 }
 
+function formatDataFromFoursquare(data, purpose){
+
+	var places = [];
+
+	if(purpose == "autocomplete"){
+		for(var i = 0; i < data.response.minivenues.length; i++){
+			places.push({
+				name	: data.response.minivenues[i].name,
+				address : data.response.minivenues[i].location.address
+						+ ", " + data.response.minivenues[i].location.city
+						+ ", " + data.response.minivenues[i].location.state
+						+ ", " + data.response.minivenues[i].location.postalCode
+						+ ", " + data.response.minivenues[i].location.country,
+				lat 	: data.response.minivenues[i].location.lat,
+				lng 	: data.response.minivenues[i].location.lng
+			});
+		}
+	}
+	else if(purpose == "search_results"){
+		for(var i = 0; i < data.response.venues.length; i++){
+			places.push({
+				name	: data.response.venues[i].name,
+				address : data.response.venues[i].location.address
+						+ ", " + data.response.venues[i].location.city
+						+ ", " + data.response.venues[i].location.state
+						+ ", " + data.response.venues[i].location.postalCode
+						+ ", " + data.response.venues[i].location.country,
+				lat 	: data.response.venues[i].location.lat,
+				lng 	: data.response.venues[i].location.lng,
+				phone 	: data.response.venues[i].contact.formattedPhone,
+				url 	: data.response.venues[i].url
+
+			});
+		}
+	}
+
+	return places;
+}
+
 function foursquareAutocomplete(query, centerCoordinate){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
 	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
 
-	var promise = Promise.resolve($.ajax({
+	return $.ajax({
 		url: fs_url,
 		data: {
 			client_id: CLIENT_ID,
@@ -70,9 +109,7 @@ function foursquareAutocomplete(query, centerCoordinate){
         error: function (e){
             console.log(e);
         }
-	}));
-
-	return promise;
+	});
 }
 
 function foursquareSearch(query, centerCoordinate){
@@ -81,7 +118,7 @@ function foursquareSearch(query, centerCoordinate){
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
 	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
 
-	var promise = Promise.resolve($.ajax({
+	return $.ajax({
 		url: fs_url,
 		data: {
 			client_id: CLIENT_ID,
@@ -97,30 +134,24 @@ function foursquareSearch(query, centerCoordinate){
         error: function (e){
             console.log(e);
         }
-	}));
-
-	return promise;
+	});
 }
 
 // Initialize Map
 var initMap = function() {
+
+	var self = this;
 	// Map configuration
 	var places = ko.observableArray(model.favoritePlaces);
+	self.searchText = ko.observable();
 
 	// Drops the marker of the place tapped or clicked
 	// from the list returned by the searchBox
 	var showPlaceLocation = function(placeInfo){
-		var placeInfo = [placeInfo];
 		clearMapMarkers(markers);
-		markers = makeMapMarkers(placeInfo);
+		markers = makeMapMarkers([placeInfo]);
 		setMapMarkers(map, markers);
 	};
-
-	// Apply the bindings
-	ko.applyBindings({
-		places: places,
-		showPlaceLocation: showPlaceLocation
-	});
 
 	// Map initial configuration
 	var mapSetup = {
@@ -139,60 +170,45 @@ var initMap = function() {
 	// Place markers
 	setMapMarkers(map, markers);
 
-	$("#foursquaresearch").keyup(function(key){
-		//console.log(model.favoritePlaces[0]);
+	var search = function(bindings, key){
 
-		if(this.value == ""){
+		if(self.searchText() == ""){
 			places([]);
 			return null;
 		}
 
 		if(key.which == 13){
-			foursquareSearch(this.value, model.favoritePlaces[0]).then(function(data){
+			foursquareSearch(self.searchText(), model.favoritePlaces[0])
+			.done(function(data){
 
-				places([]);
+				places(formatDataFromFoursquare(data, "search_results"));
 
-				for(var i = 0; i < data.response.venues.length; i++){
-					places.push({
-						name	: data.response.venues[i].name,
-						address : data.response.venues[i].location.address
-								+ ", " + data.response.venues[i].location.city
-								+ ", " + data.response.venues[i].location.state
-								+ ", " + data.response.venues[i].location.postalCode
-								+ ", " + data.response.venues[i].location.country,
-						lat 	: data.response.venues[i].location.lat,
-						lng 	: data.response.venues[i].location.lng,
-						phone	: data.response.venues[i].contact.formattedPhone,
-						website	: data.response.venues[i].url
-					});
-				}
-
-				console.log(data);
 				clearMapMarkers(markers);
 				markers = makeMapMarkers(places());
 				setMapMarkers(map, markers);
 
+			})
+			.fail(function(error){
+				console.log(error);
 			});
 		}
 
-		var promise = foursquareAutocomplete(this.value, model.favoritePlaces[0]);
+		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0])
+		.done(function(data){
 
-		promise.then(function(data){
+			places(formatDataFromFoursquare(data, "autocomplete"));
 
-			places([]);
-
-			for(var i = 0; i < data.response.minivenues.length; i++){
-				places.push({
-					name	: data.response.minivenues[i].name,
-					address : data.response.minivenues[i].location.address
-							+ ", " + data.response.minivenues[i].location.city
-							+ ", " + data.response.minivenues[i].location.state
-							+ ", " + data.response.minivenues[i].location.postalCode
-							+ ", " + data.response.minivenues[i].location.country,
-					lat 	: data.response.minivenues[i].location.lat,
-					lng 	: data.response.minivenues[i].location.lng
-				});
-			}
+		})
+		.fail(function(error){
+			console.log(error);
 		});
+	};
+
+	// Apply the bindings
+	ko.applyBindings({
+		places: places,
+		showPlaceLocation: showPlaceLocation,
+		search: search,
+		searchText: searchText
 	});
 };
