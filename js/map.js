@@ -105,10 +105,7 @@ function foursquareAutocomplete(query, centerCoordinate){
 			v: "20170101"
 		},
 		dataType: "jsonp",
-		cache: true,
-        error: function (e){
-            console.log(e);
-        }
+		cache: true
 	});
 }
 
@@ -130,10 +127,7 @@ function foursquareSearch(query, centerCoordinate){
 			v: "20170101"
 		},
 		dataType: "jsonp",
-		cache: true,
-        error: function (e){
-            console.log(e);
-        }
+		cache: true
 	});
 }
 
@@ -142,7 +136,7 @@ var initMap = function() {
 
 	var self = this;
 	// Map configuration
-	var places = ko.observableArray(model.favoritePlaces);
+	self.places = ko.observableArray(model.favoritePlaces);
 	self.searchText = ko.observable();
 
 	// Drops the marker of the place tapped or clicked
@@ -189,7 +183,7 @@ var initMap = function() {
 
 			})
 			.fail(function(error){
-				console.log(error);
+				alert("Data failed to load. Try again after 3 minutes");
 			});
 		}
 
@@ -200,7 +194,7 @@ var initMap = function() {
 
 		})
 		.fail(function(error){
-			console.log(error);
+			alert("Data failed to load. Try again after 3 minutes");
 		});
 	};
 
