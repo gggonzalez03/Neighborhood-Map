@@ -31,7 +31,9 @@ function makeMapMarkers(coordinates){
     		marker.addListener('click', function(){
     			infoWindow.setContent(
     				"<h5>"+ coordinates.name +"</h5>"
-    				+ "<p>" + coordinates.address + "</p>");
+    				+ "<p>" + coordinates.address + "</p>"
+    				+ "<p>" + coordinates.phone + "</p>"
+    				+ "<p>" + coordinates.url + "</p>");
 		    	infoWindow.open(map, marker);
 
 		    	// Make the marker bounce on tap or click
@@ -159,9 +161,13 @@ var initMap = function() {
 								+ ", " + data.response.venues[i].location.postalCode
 								+ ", " + data.response.venues[i].location.country,
 						lat 	: data.response.venues[i].location.lat,
-						lng 	: data.response.venues[i].location.lng
+						lng 	: data.response.venues[i].location.lng,
+						phone	: data.response.venues[i].contact.formattedPhone,
+						website	: data.response.venues[i].url
 					});
 				}
+
+				console.log(data);
 				clearMapMarkers(markers);
 				markers = makeMapMarkers(places());
 				setMapMarkers(map, markers);
