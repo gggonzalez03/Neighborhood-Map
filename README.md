@@ -3,3 +3,8 @@ Single page application that lets users search for places and see the details su
 
 Getting started:
 1. Open index.html in your favorite browser.
+
+
+Cited Works:
+
+Cerminara N. Default Sizes for Twitter Bootstrap's Media Queries. https://scotch.io/tutorials/default-sizes-for-twitter-bootstraps-media-queries
