@@ -30,8 +30,8 @@ function makeMapMarkers(coordinates){
 		(function (marker, coordinates) {
     		marker.addListener('click', function(){
     			infoWindow.setContent(
-    				"<h5>"+ coordinates.name +"</h5>"
-    				+ "<p>" + coordinates.address + "</p>"
+    				((coordinates.name != undefined) ? "<h5>" + coordinates.name + "</h5>" : "")
+    				+ ((coordinates.address != undefined) ? "<p>" + coordinates.address + "</p>" : "")
     				+ ((coordinates.phone != undefined) ? "<p>" + coordinates.phone + "</p>" : "")
     				+ ((coordinates.url != undefined) ? "<p>" + coordinates.url + "</p>" : ""));
 		    	infoWindow.open(map, marker);
@@ -166,12 +166,14 @@ var initMap = function() {
 
 	var search = function(bindings, key){
 
-		if(self.searchText() == ""){
+		console.log(key.which);
+		console.log(searchText().length)
+		if(self.searchText() == undefined || self.searchText() == ""){
 			places([]);
 			return null;
 		}
 
-		if(key.which == 13){
+		if(key.which == 13 || key.which == 1){
 			foursquareSearch(self.searchText(), model.favoritePlaces[0])
 			.done(function(data){
 
@@ -185,6 +187,8 @@ var initMap = function() {
 			.fail(function(error){
 				alert("Data failed to load. Try again after 3 minutes");
 			});
+
+			return null;
 		}
 
 		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0])
@@ -197,7 +201,6 @@ var initMap = function() {
 			alert("Data failed to load. Try again after 3 minutes");
 		});
 	};
-
 	// Apply the bindings
 	ko.applyBindings({
 		places: places,

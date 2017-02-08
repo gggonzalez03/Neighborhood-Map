@@ -13,13 +13,20 @@
   <body>
     <div class="container-fluid">
       <main class="row">
-        <main id="searchsection" class="col-sm-3">
-          <div id="searchbox" class="row">
-            <div class="form-group">
+        <main id="searchbox" class="col-sm-3">
+          <div class="row">
+            <div class="input-group">
               <input type="text" class="form-control" id="foursquaresearch" placeholder="Search" data-bind="textInput: searchText, event: { keyup: search }">
-            </div>
-          </div>
-
+              <div id="searchbtn" class="btn input-group-addon" data-bind="click: search">
+                ⌕
+              </div>
+              <div class="input-group-addon">
+                <select>
+                  <option></option>
+                </select>
+              </div>
+            </div><!-- /input-group -->
+          </div><!-- /.col-lg-6 -->
           <div id="searchresults" class="row">
             <table class="table table-hover" data-bind="foreach: places">
               <tr>
