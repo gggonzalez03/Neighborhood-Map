@@ -156,6 +156,7 @@ var initMap = function() {
 	var self = this;
 	// Map configuration
 	self.places = ko.observableArray(model.favoritePlaces);
+	self.suggestcompletion = ko.observableArray();
 	self.searchText = ko.observable();
 	self.categories = ko.observableArray();
 	self.selectedCategory = ko.observable();
@@ -197,14 +198,14 @@ var initMap = function() {
 	var autocomplete = function(){
 
 		if(self.searchText() == undefined || self.searchText() == ""){
-			places([]);
+			suggestcompletion([]);
 			return null;
 		}
 
 		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0], selectedCategory())
 		.done(function(data){
 
-			places(formatDataFromFoursquare(data, "autocomplete"));
+			suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
 
 		})
 		.fail(function(error){
@@ -213,8 +214,6 @@ var initMap = function() {
 	};
 
 	var search = function(){
-
-		console.log("asd");
 			foursquareSearch(self.searchText(), model.favoritePlaces[0], selectedCategory())
 			.done(function(data){
 				if(data.response.venues.length == 0){
@@ -235,6 +234,10 @@ var initMap = function() {
 
 			return null;
 	};
+
+	this.searchText.subscribe(function(){
+		autocomplete();
+	});
 	// Apply the bindings
 	ko.applyBindings({
 		places: places,

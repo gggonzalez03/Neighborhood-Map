@@ -16,8 +16,10 @@
         <main id="searchbox" class="col-sm-3">
           <div class="row">
             <form class="input-group" data-bind="submit: search">
-              <input data-bind="textInput: searchText,
-                                event: { keyup: autocomplete }" type="text" class="form-control" id="foursquaresearch" placeholder="Search">
+              <input data-bind="textInput: searchText" type="text" class="form-control" id="foursquaresearch" placeholder="Search" list="suggestions">
+              <datalist id="suggestions" data-bind="foreach: suggestcompletion">
+                <option data-bind="text: $data.name"></option>
+              </datalist>
               <div id="categoryDropdown" class="input-group-addon">
                 <select data-bind="options: categories,
                                     optionsText: 'categoryName',
