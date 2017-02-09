@@ -194,14 +194,27 @@ var initMap = function() {
 		}
 	});
 
-	var search = function(bindings, key){
+	var autocomplete = function(){
 
 		if(self.searchText() == undefined || self.searchText() == ""){
 			places([]);
 			return null;
 		}
 
-		if(key.which == 13 || key.which == 1){
+		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0], selectedCategory())
+		.done(function(data){
+
+			places(formatDataFromFoursquare(data, "autocomplete"));
+
+		})
+		.fail(function(error){
+			alert("Data failed to load. Try again after 3 minutes");
+		});
+	};
+
+	var search = function(){
+
+		console.log("asd");
 			foursquareSearch(self.searchText(), model.favoritePlaces[0], selectedCategory())
 			.done(function(data){
 				if(data.response.venues.length == 0){
@@ -221,22 +234,12 @@ var initMap = function() {
 			});
 
 			return null;
-		}
-
-		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0], selectedCategory())
-		.done(function(data){
-
-			places(formatDataFromFoursquare(data, "autocomplete"));
-
-		})
-		.fail(function(error){
-			alert("Data failed to load. Try again after 3 minutes");
-		});
 	};
 	// Apply the bindings
 	ko.applyBindings({
 		places: places,
 		showPlaceLocation: showPlaceLocation,
+		autocomplete: autocomplete,
 		search: search,
 		searchText: searchText,
 		categories,

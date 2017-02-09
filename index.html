@@ -15,9 +15,9 @@
       <main class="row">
         <main id="searchbox" class="col-sm-3">
           <div class="row">
-            <form class="input-group">
+            <form class="input-group" data-bind="submit: search">
               <input data-bind="textInput: searchText,
-                                event: { keyup: search }" type="text" class="form-control" id="foursquaresearch" placeholder="Search">
+                                event: { keyup: autocomplete }" type="text" class="form-control" id="foursquaresearch" placeholder="Search">
               <div id="categoryDropdown" class="input-group-addon">
                 <select data-bind="options: categories,
                                     optionsText: 'categoryName',
@@ -27,7 +27,7 @@
                 </select>
               </div>
               <span class="input-group-btn">
-                <button id="searchbtn" class="btn btn-default" type="submit" data-bind="click: search">⌕</button>
+                <button id="searchbtn" class="btn btn-default" type="submit">⌕</button>
               </span>
             </form><!-- /input-group -->
           </div><!-- /.col-lg-6 -->
