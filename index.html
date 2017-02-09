@@ -16,7 +16,8 @@
         <main id="searchbox" class="col-sm-3">
           <div class="row">
             <form class="input-group">
-              <input type="text" class="form-control" id="foursquaresearch" placeholder="Search" data-bind="textInput: searchText, event: { keyup: search }"> 
+              <input data-bind="textInput: searchText,
+                                event: { keyup: search }" type="text" class="form-control" id="foursquaresearch" placeholder="Search">
               <div id="categoryDropdown" class="input-group-addon">
                 <select data-bind="options: categories,
                                     optionsText: 'categoryName',

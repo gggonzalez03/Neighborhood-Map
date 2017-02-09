@@ -208,6 +208,7 @@ var initMap = function() {
 					places({name: "No results"});
 					return null;
 				}
+
 				places(formatDataFromFoursquare(data, "search_results"));
 
 				clearMapMarkers(markers);
