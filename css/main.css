@@ -1,7 +1,7 @@
 /*==========  Mobile First Method  ==========*/
 
 /* Custom, iPhone Retina */ 
-@media only screen and (min-width : 320px) {
+@media only screen and (min-width : 0px) {
 	html, body
 	{
 		height: 100%;
