@@ -87,7 +87,7 @@ function formatDataFromFoursquare(data, purpose){
 	return places;
 }
 
-function foursquareAutocomplete(query, centerCoordinate){
+function foursquareAutocomplete(query, centerCoordinate, categoryId){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
@@ -109,7 +109,7 @@ function foursquareAutocomplete(query, centerCoordinate){
 	});
 }
 
-function foursquareSearch(query, centerCoordinate){
+function foursquareSearch(query, centerCoordinate, categoryId){
 	fs_url = "https://api.foursquare.com/v2/venues/search";
 
 	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
@@ -124,6 +124,25 @@ function foursquareSearch(query, centerCoordinate){
 			query: query,
 			radius: 10000,
 			limit: 10,
+			categoryId: categoryId,
+			v: "20170101"
+		},
+		dataType: "jsonp",
+		cache: true
+	});
+}
+
+function foursquareCategories(){
+	fs_url = "https://api.foursquare.com/v2/venues/categories";
+
+	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
+	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
+
+	return $.ajax({
+		url: fs_url,
+		data: {
+			client_id: CLIENT_ID,
+			client_secret: CLIENT_SECRET,
 			v: "20170101"
 		},
 		dataType: "jsonp",
@@ -138,6 +157,8 @@ var initMap = function() {
 	// Map configuration
 	self.places = ko.observableArray(model.favoritePlaces);
 	self.searchText = ko.observable();
+	self.categories = ko.observableArray();
+	self.selectedCategory = ko.observable();
 
 	// Drops the marker of the place tapped or clicked
 	// from the list returned by the searchBox
@@ -164,19 +185,29 @@ var initMap = function() {
 	// Place markers
 	setMapMarkers(map, markers);
 
+	foursquareCategories().done(function(data){
+		for(var i = 0; i < data.response.categories.length; i++){
+			categories.push({
+				categoryName: data.response.categories[i].shortName,
+				categoryId: data.response.categories[i].id
+				});
+		}
+	});
+
 	var search = function(bindings, key){
 
-		console.log(key.which);
-		console.log(searchText().length)
 		if(self.searchText() == undefined || self.searchText() == ""){
 			places([]);
 			return null;
 		}
 
 		if(key.which == 13 || key.which == 1){
-			foursquareSearch(self.searchText(), model.favoritePlaces[0])
+			foursquareSearch(self.searchText(), model.favoritePlaces[0], selectedCategory())
 			.done(function(data){
-
+				if(data.response.venues.length == 0){
+					places({name: "No results"});
+					return null;
+				}
 				places(formatDataFromFoursquare(data, "search_results"));
 
 				clearMapMarkers(markers);
@@ -185,13 +216,13 @@ var initMap = function() {
 
 			})
 			.fail(function(error){
-				alert("Data failed to load. Try again after 3 minutes");
+				alert("Data failed to load. Try again after 3 minutese");
 			});
 
 			return null;
 		}
 
-		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0])
+		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0], selectedCategory())
 		.done(function(data){
 
 			places(formatDataFromFoursquare(data, "autocomplete"));
@@ -206,6 +237,8 @@ var initMap = function() {
 		places: places,
 		showPlaceLocation: showPlaceLocation,
 		search: search,
-		searchText: searchText
+		searchText: searchText,
+		categories,
+		selectedCategory
 	});
 };
