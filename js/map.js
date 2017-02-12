@@ -13,15 +13,15 @@ function clearMapMarkers(markers){
 
 // Takes an array of coordinates and
 // returns an array of Marker objects
-function makeMapMarkers(coordinates){
+function makeMapMarkers(map, coordinates){
 
-	var markers = [];
+	map.markers = [];
 	var infoWindow = new google.maps.InfoWindow();
 
 	// This will create and store markers in markers array variable
 	// Each marker will be created with event listeners on click
 	for(var i = 0; i < coordinates.length; i++){
-		markers.push(new google.maps.Marker({
+		map.markers.push(new google.maps.Marker({
 			position: coordinates[i],
 			animation: google.maps.Animation.DROP
 		}));
@@ -42,10 +42,8 @@ function makeMapMarkers(coordinates){
 		    	// Sets how long the marker should bounce
 		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
 		    })
-	    })(markers[i], coordinates[i]);
+	    })(map.markers[i], coordinates[i]);
 	}
-
-	return markers;
 }
 
 function formatDataFromFoursquare(data, purpose){
@@ -154,58 +152,62 @@ function foursquareCategories(){
 var initMap = function() {
 
 	var self = this;
-	// Map configuration
-	self.places = ko.observableArray(model.favoritePlaces);
-	self.suggestcompletion = ko.observableArray();
-	self.searchText = ko.observable();
-	self.categories = ko.observableArray();
-	self.selectedCategory = ko.observable();
 
-	// Drops the marker of the place tapped or clicked
-	// from the list returned by the searchBox
-	var showPlaceLocation = function(placeInfo){
-		clearMapMarkers(markers);
-		markers = makeMapMarkers([placeInfo]);
-		setMapMarkers(map, markers);
+	var observables = {
+		places : ko.observableArray(model.favoritePlaces),
+		suggestcompletion : ko.observableArray(),
+		searchText : ko.observable(),
+		categories : ko.observableArray(),
+		selectedCategory : ko.observable()
 	};
 
 	// Map initial configuration
 	var mapSetup = {
-		center: new google.maps.LatLng(places()[4]),
+		center: new google.maps.LatLng(observables.places()[4]),
 		zoom: 11,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 
-	//Show the map in the element with id of "map"
+	// Show the map in the element with id of "map"
 	// and store the map object in variable map
-	var map = new google.maps.Map($('#map')[0], mapSetup);
+	var map = {
+		map: new google.maps.Map($('#map')[0], mapSetup),
+		markers: []
+	};
+
+	makeMapMarkers(map, observables.places());
 
 	// Place the initial markers
-	var markers = makeMapMarkers(places());
+	setMapMarkers(map.map, map.markers);
 
-	// Place markers
-	setMapMarkers(map, markers);
+	// Drops the marker of the place tapped or clicked
+	// from the list returned by the searchBox
+	var showPlaceLocation = function(placeInfo){
+		clearMapMarkers(map.markers);
+		makeMapMarkers(map, [placeInfo]);
+		setMapMarkers(map.map, map.markers);
+	};
 
 	foursquareCategories().done(function(data){
 		for(var i = 0; i < data.response.categories.length; i++){
-			categories.push({
+			observables.categories.push({
 				categoryName: data.response.categories[i].shortName,
 				categoryId: data.response.categories[i].id
-				});
+			});
 		}
 	});
 
 	var autocomplete = function(){
 
-		if(self.searchText() == undefined || self.searchText() == ""){
-			suggestcompletion([]);
+		if(observables.searchText() == undefined || observables.searchText() == ""){
+			observables.suggestcompletion([]);
 			return null;
 		}
 
-		foursquareAutocomplete(self.searchText(), model.favoritePlaces[0], selectedCategory())
+		foursquareAutocomplete(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
 		.done(function(data){
 
-			suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
+			observables.suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
 
 		})
 		.fail(function(error){
@@ -214,18 +216,18 @@ var initMap = function() {
 	};
 
 	var search = function(){
-			foursquareSearch(self.searchText(), model.favoritePlaces[0], selectedCategory())
+			foursquareSearch(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
 			.done(function(data){
 				if(data.response.venues.length == 0){
-					places({name: "No results"});
+					observables.places({name: "No results"});
 					return null;
 				}
 
-				places(formatDataFromFoursquare(data, "search_results"));
+				observables.places(formatDataFromFoursquare(data, "search_results"));
 
-				clearMapMarkers(markers);
-				markers = makeMapMarkers(places());
-				setMapMarkers(map, markers);
+				clearMapMarkers(map.markers);
+				makeMapMarkers(map, observables.places());
+				setMapMarkers(map.map, map.markers);
 
 			})
 			.fail(function(error){
@@ -235,17 +237,18 @@ var initMap = function() {
 			return null;
 	};
 
-	this.searchText.subscribe(function(){
+	observables.searchText.subscribe(function(){
 		autocomplete();
 	});
 	// Apply the bindings
 	ko.applyBindings({
-		places: places,
+		places: observables.places,
 		showPlaceLocation: showPlaceLocation,
 		autocomplete: autocomplete,
 		search: search,
-		searchText: searchText,
-		categories,
-		selectedCategory
+		searchText: observables.searchText,
+		categories: observables.categories,
+		selectedCategory: observables.selectedCategory,
+		suggestcompletion: observables.suggestcompletion
 	});
 };
