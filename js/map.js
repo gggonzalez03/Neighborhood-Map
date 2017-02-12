@@ -175,18 +175,55 @@ var initMap = function() {
 		markers: []
 	};
 
-	makeMapMarkers(map, observables.places());
+	var mapFunctions = {
+		showPlaceLocation: function(placeInfo){
+			// Drops the marker of the place tapped or clicked
+			// from the list returned by the searchBox
+			clearMapMarkers(map.markers);
+			makeMapMarkers(map, [placeInfo]);
+			setMapMarkers(map.map, map.markers);
+		},
+		autocomplete: function(){
+			if(observables.searchText() == undefined || observables.searchText() == ""){
+				observables.suggestcompletion([]);
+				return null;
+			}
 
-	// Place the initial markers
-	setMapMarkers(map.map, map.markers);
+			foursquareAutocomplete(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
+			.done(function(data){
 
-	// Drops the marker of the place tapped or clicked
-	// from the list returned by the searchBox
-	var showPlaceLocation = function(placeInfo){
-		clearMapMarkers(map.markers);
-		makeMapMarkers(map, [placeInfo]);
-		setMapMarkers(map.map, map.markers);
+				observables.suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
+
+			})
+			.fail(function(error){
+				alert("Data failed to load. Try again after 3 minutes");
+			});
+		},
+		search: function(){
+				foursquareSearch(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
+				.done(function(data){
+					if(data.response.venues.length == 0){
+						observables.places({name: "No results"});
+						return null;
+					}
+
+					observables.places(formatDataFromFoursquare(data, "search_results"));
+
+					clearMapMarkers(map.markers);
+					makeMapMarkers(map, observables.places());
+					setMapMarkers(map.map, map.markers);
+
+				})
+				.fail(function(error){
+					alert("Data failed to load. Try again after 3 minutese");
+				});
+
+				return null;
+		}
 	};
+
+	makeMapMarkers(map, observables.places());
+	setMapMarkers(map.map, map.markers);
 
 	foursquareCategories().done(function(data){
 		for(var i = 0; i < data.response.categories.length; i++){
@@ -197,55 +234,15 @@ var initMap = function() {
 		}
 	});
 
-	var autocomplete = function(){
-
-		if(observables.searchText() == undefined || observables.searchText() == ""){
-			observables.suggestcompletion([]);
-			return null;
-		}
-
-		foursquareAutocomplete(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
-		.done(function(data){
-
-			observables.suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
-
-		})
-		.fail(function(error){
-			alert("Data failed to load. Try again after 3 minutes");
-		});
-	};
-
-	var search = function(){
-			foursquareSearch(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
-			.done(function(data){
-				if(data.response.venues.length == 0){
-					observables.places({name: "No results"});
-					return null;
-				}
-
-				observables.places(formatDataFromFoursquare(data, "search_results"));
-
-				clearMapMarkers(map.markers);
-				makeMapMarkers(map, observables.places());
-				setMapMarkers(map.map, map.markers);
-
-			})
-			.fail(function(error){
-				alert("Data failed to load. Try again after 3 minutese");
-			});
-
-			return null;
-	};
-
 	observables.searchText.subscribe(function(){
-		autocomplete();
+		mapFunctions.autocomplete();
 	});
 	// Apply the bindings
 	ko.applyBindings({
 		places: observables.places,
-		showPlaceLocation: showPlaceLocation,
-		autocomplete: autocomplete,
-		search: search,
+		showPlaceLocation: mapFunctions.showPlaceLocation,
+		autocomplete: mapFunctions.autocomplete,
+		search: mapFunctions.search,
 		searchText: observables.searchText,
 		categories: observables.categories,
 		selectedCategory: observables.selectedCategory,
