@@ -54,11 +54,6 @@ function formatDataFromFoursquare(data, purpose){
 		for(var i = 0; i < data.response.minivenues.length; i++){
 			places.push({
 				name	: data.response.minivenues[i].name,
-				address : data.response.minivenues[i].location.address
-						+ ", " + data.response.minivenues[i].location.city
-						+ ", " + data.response.minivenues[i].location.state
-						+ ", " + data.response.minivenues[i].location.postalCode
-						+ ", " + data.response.minivenues[i].location.country,
 				lat 	: data.response.minivenues[i].location.lat,
 				lng 	: data.response.minivenues[i].location.lng
 			});
@@ -66,19 +61,28 @@ function formatDataFromFoursquare(data, purpose){
 	}
 	else if(purpose == "search_results"){
 		for(var i = 0; i < data.response.venues.length; i++){
-			places.push({
-				name	: data.response.venues[i].name,
-				address : data.response.venues[i].location.address
-						+ ", " + data.response.venues[i].location.city
-						+ ", " + data.response.venues[i].location.state
-						+ ", " + data.response.venues[i].location.postalCode
-						+ ", " + data.response.venues[i].location.country,
-				lat 	: data.response.venues[i].location.lat,
-				lng 	: data.response.venues[i].location.lng,
-				phone 	: data.response.venues[i].contact.formattedPhone,
-				url 	: data.response.venues[i].url
 
+			var address = data.response.venues[i].location.formattedAddress;
+			var cleanData = {
+				address: ""
+			};
+
+			address.forEach(function(addressPart, index, addressArray){
+				if(index != addressArray.length-1){
+					cleanData.address += addressPart + ", ";
+				}
+				else{
+					cleanData.address += addressPart;
+				}
 			});
+
+			cleanData.name	= data.response.venues[i].name,
+			cleanData.lat 	= data.response.venues[i].location.lat,
+			cleanData.lng 	= data.response.venues[i].location.lng,
+			cleanData.phone 	= data.response.venues[i].contact.formattedPhone,
+			cleanData.url 	= data.response.venues[i].url
+
+			places.push(cleanData);
 		}
 	}
 
