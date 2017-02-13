@@ -33,7 +33,7 @@ function makeMapMarkers(map, coordinates){
     				((coordinates.name != undefined) ? "<h5>" + coordinates.name + "</h5>" : "")
     				+ ((coordinates.address != undefined) ? "<p>" + coordinates.address + "</p>" : "")
     				+ ((coordinates.phone != undefined) ? "<p>" + coordinates.phone + "</p>" : "")
-    				+ ((coordinates.url != undefined) ? "<p>" + coordinates.url + "</p>" : ""));
+    				+ ((coordinates.url != undefined) ? "<a href='" + coordinates.url + "'>" + coordinates.url + "</a>" : ""));
 		    	infoWindow.open(map, marker);
 
 		    	// Make the marker bounce on tap or click
