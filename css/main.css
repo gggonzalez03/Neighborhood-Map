@@ -11,6 +11,7 @@
 	}
 	.input-group-addon{
 		padding: 0;
+		height: 100%
 	}
 
 	#mapcontainer{
@@ -21,6 +22,11 @@
 	{
 		height: 100vh;
 		padding: 0px;
+	}
+
+	#foursquaresearch{
+		background: url(../img/foursquareLogo.png) no-repeat right;
+		background-size: 20px 20px;
 	}
 
 	#categoryDropdown{
