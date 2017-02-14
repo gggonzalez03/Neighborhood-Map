@@ -1,4 +1,7 @@
-// Takes an array of Marker objects
+/**
+ * Sets markers on the map
+ * @param {object} map     Map object that the markers will be set on
+ */
 function setMapMarkers(map, markers) {
 
     for (var i = 0; i < markers.length; i++) {
@@ -6,46 +9,73 @@ function setMapMarkers(map, markers) {
     }
 }
 
-// Clears all the markers on the map
+/**
+ * Clears all markers on the map
+ * @param  {Array} markers Array of markers being deleted
+ */	
 function clearMapMarkers(markers){
 	setMapMarkers(null, markers);
 }
 
-// Takes an array of coordinates and
-// returns an array of Marker objects
-function makeMapMarkers(map, coordinates){
+/**
+ * Takes a map object and an array of places that
+ * will replace the current set of places marked on the map
+ * @param  {object} map         The map object that contains the map itself and its markers
+ * @param  {array} places 		List of places with its associated information
+ */
+function makeMapMarkers(map, places){
 
 	map.markers = [];
 	var infoWindow = new google.maps.InfoWindow();
 
 	// This will create and store markers in markers array variable
 	// Each marker will be created with event listeners on click
-	for(var i = 0; i < coordinates.length; i++){
+	/**
+	 * Creates and stores markers in map.markers
+	 * Each marker will be created with event listner on click
+	 * @param  {int} var i 			iterator
+	 */
+	for(var i = 0; i < places.length; i++){
 		map.markers.push(new google.maps.Marker({
-			position: coordinates[i],
+			position: places[i],
 			animation: google.maps.Animation.DROP
 		}));
 
-		// Sets the listener on current i in the interation
-		(function (marker, coordinates) {
+		/**
+		 * Sets the listener on current marker in the iteration
+		 * @param  {[type]} marker [description]
+		 * @param  {[type]} places [description]
+		 * @return {[type]}        [description]
+		 */
+		(function (marker, places) {
     		marker.addListener('click', function(){
     			infoWindow.setContent(
-    				((coordinates.name != undefined) ? "<h5>" + coordinates.name + "</h5>" : "")
-    				+ ((coordinates.address != undefined) ? "<p>" + coordinates.address + "</p>" : "")
-    				+ ((coordinates.phone != undefined) ? "<p>" + coordinates.phone + "</p>" : "")
-    				+ ((coordinates.url != undefined) ? "<a href='" + coordinates.url + "'>" + coordinates.url + "</a>" : ""));
+    				((places.name != undefined) ? "<h5>" + places.name + "</h5>" : "")
+    				+ ((places.address != undefined) ? "<p>" + places.address + "</p>" : "")
+    				+ ((places.phone != undefined) ? "<p>" + places.phone + "</p>" : "")
+    				+ ((places.url != undefined) ? "<a href='" + places.url + "'>" + places.url + "</a>" : ""));
 		    	infoWindow.open(map, marker);
 
-		    	// Make the marker bounce on tap or click
+		    	/**
+		    	 * Make the marker bounce on tap or click
+		    	 */
 		    	marker.setAnimation(google.maps.Animation.BOUNCE)
 
-		    	// Sets how long the marker should bounce
+		    	/**
+		    	 * Sets how long the marker should bounce
+		    	 */
 		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
 		    })
-	    })(map.markers[i], coordinates[i]);
+	    })(map.markers[i], places[i]);
 	}
 }
 
+/**
+ * Formats the data based on its purpose
+ * @param  {object} data    Object that has the information that needs reformatting
+ * @param  {string} purpose Puspose in which the result will be used for
+ * @return {array}         Array of formatted objects based on purpose
+ */
 function formatDataFromFoursquare(data, purpose){
 
 	var places = [];
@@ -89,6 +119,13 @@ function formatDataFromFoursquare(data, purpose){
 	return places;
 }
 
+/**
+ * Request autocomplete data from foursquare
+ * @param  {string} query            The string that is being autocompleted
+ * @param  {object} centerCoordinate Coordinates where the search will be biased on
+ * @param  {string} categoryId       Category to search from
+ * @return {Promise}                 A promise object that has the data requested from foursquare
+ */
 function foursquareAutocomplete(query, centerCoordinate, categoryId){
 	fs_url = "https://api.foursquare.com/v2/venues/suggestcompletion";
 
@@ -111,6 +148,13 @@ function foursquareAutocomplete(query, centerCoordinate, categoryId){
 	});
 }
 
+/**
+ * Request places' data from foursquare
+ * @param  {string} query            The term being searched for
+ * @param  {object} centerCoordinate Coordinates where the search will be biased on
+ * @param  {string} categoryId       Category to search from
+ * @return {Promise}                 A promise object that has the data requested from foursquare
+ */
 function foursquareSearch(query, centerCoordinate, categoryId){
 	fs_url = "https://api.foursquare.com/v2/venues/search";
 
@@ -134,6 +178,10 @@ function foursquareSearch(query, centerCoordinate, categoryId){
 	});
 }
 
+/**
+ * Request possible categories from foursquare
+ * @return {object} Promise object that holds the data fro foursquare
+ */
 function foursquareCategories(){
 	fs_url = "https://api.foursquare.com/v2/venues/categories";
 
@@ -152,7 +200,9 @@ function foursquareCategories(){
 	});
 }
 
-// Initialize Map
+/**
+ * Initializes the map
+ */
 var initMap = function() {
 
 	var self = this;
@@ -165,24 +215,28 @@ var initMap = function() {
 		selectedCategory : ko.observable()
 	};
 
-	// Map initial configuration
+	/**
+	 * Map configurations
+	 * @type {Object}
+	 */
 	var mapSetup = {
 		center: new google.maps.LatLng(observables.places()[4]),
 		zoom: 11,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 
-	// Show the map in the element with id of "map"
-	// and store the map object in variable map
 	var map = {
 		map: new google.maps.Map($('#map')[0], mapSetup),
 		markers: []
 	};
 
+	/**
+	 * Drops the marker of the place tapped or clicked
+	 * from the list of places under the searchBox
+	 * @type {Object}
+	 */
 	var mapFunctions = {
 		showPlaceLocation: function(placeInfo){
-			// Drops the marker of the place tapped or clicked
-			// from the list returned by the searchBox
 			clearMapMarkers(map.markers);
 			makeMapMarkers(map, [placeInfo]);
 			setMapMarkers(map.map, map.markers);
@@ -241,7 +295,10 @@ var initMap = function() {
 	observables.searchText.subscribe(function(){
 		mapFunctions.autocomplete();
 	});
-	// Apply the bindings
+	
+	/**
+	 * Apply bindings
+	 */
 	ko.applyBindings({
 		places: observables.places,
 		showPlaceLocation: mapFunctions.showPlaceLocation,
