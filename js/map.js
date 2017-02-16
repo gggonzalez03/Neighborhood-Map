@@ -70,6 +70,13 @@ function makeMapMarkers(map, places){
 	}
 }
 
+function showInfoWindow(markers, placeInfo){
+	markers.forEach(function(marker){
+		if(placeInfo.lat == marker.position.lat() && placeInfo.lng == marker.position.lng()){
+			google.maps.event.trigger(marker, 'click');
+		}
+	});
+}
 /**
  * Formats the data based on its purpose
  * @param  {object} data    Object that has the information that needs reformatting
@@ -237,9 +244,7 @@ var initMap = function() {
 	 */
 	var mapFunctions = {
 		showPlaceLocation: function(placeInfo){
-			clearMapMarkers(map.markers);
-			makeMapMarkers(map, [placeInfo]);
-			setMapMarkers(map.map, map.markers);
+			showInfoWindow(map.markers, placeInfo);
 		},
 		autocomplete: function(){
 			if(observables.searchText() == undefined || observables.searchText() == ""){
