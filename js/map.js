@@ -176,7 +176,7 @@ function foursquareSearch(query, centerCoordinate, categoryId){
 			ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
 			query: query,
 			radius: 10000,
-			limit: 10,
+			limit: 20,
 			categoryId: categoryId,
 			v: "20170101"
 		},
@@ -215,27 +215,19 @@ var initMap = function() {
 	var self = this;
 
 	var observables = {
-		places : ko.observableArray(model.favoritePlaces),
+		places : ko.observableArray(),
 		suggestcompletion : ko.observableArray(),
 		searchText : ko.observable(),
 		categories : ko.observableArray(),
 		selectedCategory : ko.observable()
 	};
 
-	/**
-	 * Map configurations
-	 * @type {Object}
-	 */
-	var mapSetup = {
-		center: new google.maps.LatLng(observables.places()[4]),
-		zoom: 11,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
-	};
-
-	var map = {
-		map: new google.maps.Map($('#map')[0], mapSetup),
-		markers: []
-	};
+	var mapCenterSelect = {
+		san_jose: {
+			lat: 37.3382082,
+			lng: -122.0450548
+		}
+	}
 
 	/**
 	 * Drops the marker of the place tapped or clicked
@@ -252,7 +244,7 @@ var initMap = function() {
 				return null;
 			}
 
-			foursquareAutocomplete(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
+			foursquareAutocomplete(observables.searchText(), mapCenterSelect.san_jose, observables.selectedCategory())
 			.done(function(data){
 
 				observables.suggestcompletion(formatDataFromFoursquare(data, "autocomplete"));
@@ -263,30 +255,47 @@ var initMap = function() {
 			});
 		},
 		search: function(){
-				foursquareSearch(observables.searchText(), model.favoritePlaces[0], observables.selectedCategory())
-				.done(function(data){
-					if(data.response.venues.length == 0){
-						observables.places({name: "No results"});
-						return null;
-					}
+			foursquareSearch(observables.searchText(), mapCenterSelect.san_jose, observables.selectedCategory())
+			.done(function(data){
+				if(data.response.venues.length == 0){
+					observables.places({name: "No results"});
+					return null;
+				}
 
-					observables.places(formatDataFromFoursquare(data, "search_results"));
+				observables.places(formatDataFromFoursquare(data, "search_results"));
 
-					clearMapMarkers(map.markers);
-					makeMapMarkers(map, observables.places());
-					setMapMarkers(map.map, map.markers);
+				clearMapMarkers(map.markers);
+				makeMapMarkers(map, observables.places());
+				setMapMarkers(map.map, map.markers);
 
-				})
-				.fail(function(error){
-					alert("Data failed to load. Try again after 3 minutese");
-				});
+			})
+			.fail(function(error){
+				alert("Data failed to load. Try again after 3 minutese");
+			});
 
-				return null;
+			return null;
 		}
 	};
 
-	makeMapMarkers(map, observables.places());
-	setMapMarkers(map.map, map.markers);
+	/**
+	 * Map configurations
+	 * @type {Object}
+	 */
+	var mapSetup = {
+		center: new google.maps.LatLng(mapCenterSelect.san_jose),
+		zoom: 12,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
+
+	var map = {
+		map: new google.maps.Map($('#map')[0], mapSetup),
+		markers: []
+	};
+	
+	observables.searchText();
+	observables.selectedCategory();
+
+	mapFunctions.search();
 
 	foursquareCategories().done(function(data){
 		for(var i = 0; i < data.response.categories.length; i++){
