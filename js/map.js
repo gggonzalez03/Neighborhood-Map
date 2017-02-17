@@ -37,6 +37,7 @@ function makeMapMarkers(map, places){
 	 */
 	for(var i = 0; i < places.length; i++){
 		map.markers.push(new google.maps.Marker({
+			id 		: places[i].id,
 			position: places[i],
 			animation: google.maps.Animation.DROP
 		}));
@@ -72,7 +73,7 @@ function makeMapMarkers(map, places){
 
 function showInfoWindow(markers, placeInfo){
 	markers.forEach(function(marker){
-		if(placeInfo.lat == marker.position.lat() && placeInfo.lng == marker.position.lng()){
+		if(placeInfo.id == marker.id){
 			google.maps.event.trigger(marker, 'click');
 		}
 	});
@@ -90,6 +91,7 @@ function formatDataFromFoursquare(data, purpose){
 	if(purpose == "autocomplete"){
 		for(var i = 0; i < data.response.minivenues.length; i++){
 			places.push({
+				id 		: data.response.minivenues[i].id,
 				name	: data.response.minivenues[i].name,
 				lat 	: data.response.minivenues[i].location.lat,
 				lng 	: data.response.minivenues[i].location.lng
@@ -113,6 +115,7 @@ function formatDataFromFoursquare(data, purpose){
 				}
 			});
 
+			cleanData.id 	= data.response.venues[i].id,
 			cleanData.name	= data.response.venues[i].name,
 			cleanData.lat 	= data.response.venues[i].location.lat,
 			cleanData.lng 	= data.response.venues[i].location.lng,
@@ -257,6 +260,10 @@ var initMap = function() {
 		search: function(){
 			foursquareSearch(observables.searchText(), mapCenterSelect.san_jose, observables.selectedCategory())
 			.done(function(data){
+				/**
+				 * observables.places should be edited globally from here
+				 */
+
 				if(data.response.venues.length == 0){
 					observables.places({name: "No results"});
 					return null;
