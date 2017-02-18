@@ -129,6 +129,11 @@ function formatDataFromFoursquare(data, purpose){
 	return places;
 }
 
+
+function getTopLevelCategory(catHier, marker){
+	console.log()
+}
+
 /**
  * Request autocomplete data from foursquare
  * @param  {string} query            The string that is being autocompleted
@@ -277,7 +282,7 @@ var initMap = function() {
 
 			})
 			.fail(function(error){
-				alert("Data failed to load. Try again after 3 minutese");
+				alert("Data failed to load. Try again after 3 minutes");
 			});
 
 			return null;
@@ -305,12 +310,7 @@ var initMap = function() {
 	mapFunctions.search();
 
 	foursquareCategories().done(function(data){
-		for(var i = 0; i < data.response.categories.length; i++){
-			observables.categories.push({
-				categoryName: data.response.categories[i].shortName,
-				categoryId: data.response.categories[i].id
-			});
-		}
+		observables.categories(data.response.categories);
 	});
 
 	observables.searchText.subscribe(function(){
