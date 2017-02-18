@@ -39,7 +39,8 @@ function makeMapMarkers(map, places){
 		map.markers.push(new google.maps.Marker({
 			id 		: places[i].id,
 			position: places[i],
-			animation: google.maps.Animation.DROP
+			animation: google.maps.Animation.DROP,
+			categories: places[i].categories
 		}));
 
 		/**
@@ -99,6 +100,7 @@ function formatDataFromFoursquare(data, purpose){
 		}
 	}
 	else if(purpose == "search_results"){
+
 		for(var i = 0; i < data.response.venues.length; i++){
 
 			var address = data.response.venues[i].location.formattedAddress;
@@ -120,7 +122,8 @@ function formatDataFromFoursquare(data, purpose){
 			cleanData.lat 	= data.response.venues[i].location.lat,
 			cleanData.lng 	= data.response.venues[i].location.lng,
 			cleanData.phone 	= data.response.venues[i].contact.formattedPhone,
-			cleanData.url 	= data.response.venues[i].url
+			cleanData.url 	= data.response.venues[i].url,
+			cleanData.categories = data.response.venues[i].categories
 
 			places.push(cleanData);
 		}
@@ -130,8 +133,23 @@ function formatDataFromFoursquare(data, purpose){
 }
 
 
-function getTopLevelCategory(catHier, marker){
-	console.log()
+function isUnderCategory(categoryId, place, catHier){
+
+	var underCategory = false;
+
+	catHier.forEach(function(topCat){
+		if(topCat.id == categoryId){
+			place.categories.forEach(function(placeCat){
+				topCat.categories.forEach(function(subCat){
+					if(placeCat.id == subCat.id){
+						underCategory = true;
+					}
+				});
+			});
+		}
+	});
+
+	return underCategory;
 }
 
 /**
@@ -286,6 +304,14 @@ var initMap = function() {
 			});
 
 			return null;
+		},
+		filterMarkers: function(){
+			map.markers.forEach(function(marker){
+				marker.setVisible(true);
+				if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
+					marker.setVisible(false);
+				}
+			});
 		}
 	};
 
@@ -325,6 +351,7 @@ var initMap = function() {
 		showPlaceLocation: mapFunctions.showPlaceLocation,
 		autocomplete: mapFunctions.autocomplete,
 		search: mapFunctions.search,
+		filterMarkers: mapFunctions.filterMarkers,
 		searchText: observables.searchText,
 		categories: observables.categories,
 		selectedCategory: observables.selectedCategory,
