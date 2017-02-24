@@ -25,7 +25,7 @@ function clearMapMarkers(markers){
  */
 function makeMapMarkers(map, places){
 
-	map.markers = [];
+	map.markers([]);
 	var infoWindow = new google.maps.InfoWindow();
 
 	// This will create and store markers in markers array variable
@@ -38,6 +38,7 @@ function makeMapMarkers(map, places){
 	for(var i = 0; i < places.length; i++){
 		map.markers.push(new google.maps.Marker({
 			id 		: places[i].id,
+			name 	: places[i].name,
 			position: places[i],
 			animation: google.maps.Animation.DROP,
 			categories: places[i].categories
@@ -68,7 +69,7 @@ function makeMapMarkers(map, places){
 		    	 */
 		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
 		    })
-	    })(map.markers[i], places[i]);
+	    })(map.markers()[i], places[i]);
 	}
 }
 
@@ -262,7 +263,7 @@ var initMap = function() {
 	 */
 	var mapFunctions = {
 		showPlaceLocation: function(placeInfo){
-			showInfoWindow(map.markers, placeInfo);
+			showInfoWindow(map.markers(), placeInfo);
 		},
 		autocomplete: function(){
 			if(observables.searchText() == undefined || observables.searchText() == ""){
@@ -294,9 +295,9 @@ var initMap = function() {
 
 				observables.places(formatDataFromFoursquare(data, "search_results"));
 
-				clearMapMarkers(map.markers);
+				clearMapMarkers(map.markers());
 				makeMapMarkers(map, observables.places());
-				setMapMarkers(map.map, map.markers);
+				setMapMarkers(map.map, map.markers());
 
 			})
 			.fail(function(error){
@@ -306,7 +307,8 @@ var initMap = function() {
 			return null;
 		},
 		filterMarkers: function(){
-			map.markers.forEach(function(marker){
+			map.markers().forEach(function(marker){
+				console.log(marker);
 				marker.setVisible(true);
 				if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
 					marker.setVisible(false);
@@ -327,7 +329,7 @@ var initMap = function() {
 
 	var map = {
 		map: new google.maps.Map($('#map')[0], mapSetup),
-		markers: []
+		markers: ko.observableArray(),
 	};
 	
 	observables.searchText();
@@ -348,6 +350,7 @@ var initMap = function() {
 	 */
 	ko.applyBindings({
 		places: observables.places,
+		markers: map.markers,
 		showPlaceLocation: mapFunctions.showPlaceLocation,
 		autocomplete: mapFunctions.autocomplete,
 		search: mapFunctions.search,
