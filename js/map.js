@@ -36,14 +36,8 @@ function makeMapMarkers(map, places){
 	 * @param  {int} var i 			iterator
 	 */
 	for(var i = 0; i < places.length; i++){
-		map.markers.push(new google.maps.Marker({
-			id 		: places[i].id,
-			name 	: places[i].name,
-			position: places[i],
-			animation: google.maps.Animation.DROP,
-			categories: places[i].categories
-		}));
-
+		places[i].animation = google.maps.Animation.DROP;
+		map.markers.push(new google.maps.Marker(places[i]));
 		/**
 		 * Sets the listener on current marker in the iteration
 		 * @param  {[type]} marker [description]
@@ -120,8 +114,10 @@ function formatDataFromFoursquare(data, purpose){
 
 			cleanData.id 	= data.response.venues[i].id,
 			cleanData.name	= data.response.venues[i].name,
-			cleanData.lat 	= data.response.venues[i].location.lat,
-			cleanData.lng 	= data.response.venues[i].location.lng,
+			cleanData.position = {
+				lat: data.response.venues[i].location.lat,
+				lng: data.response.venues[i].location.lng
+			},
 			cleanData.phone 	= data.response.venues[i].contact.formattedPhone,
 			cleanData.url 	= data.response.venues[i].url,
 			cleanData.categories = data.response.venues[i].categories
@@ -242,7 +238,6 @@ var initMap = function() {
 	var self = this;
 
 	var observables = {
-		places : ko.observableArray(),
 		suggestcompletion : ko.observableArray(),
 		searchText : ko.observable(),
 		categories : ko.observableArray(),
@@ -289,14 +284,11 @@ var initMap = function() {
 				 */
 
 				if(data.response.venues.length == 0){
-					observables.places({name: "No results"});
 					return null;
 				}
 
-				observables.places(formatDataFromFoursquare(data, "search_results"));
-
 				clearMapMarkers(map.markers());
-				makeMapMarkers(map, observables.places());
+				makeMapMarkers(map, formatDataFromFoursquare(data, "search_results"));
 				setMapMarkers(map.map, map.markers());
 
 			})
@@ -308,12 +300,12 @@ var initMap = function() {
 		},
 		filterMarkers: function(){
 			map.markers().forEach(function(marker){
-				console.log(marker);
 				marker.setVisible(true);
 				if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
 					marker.setVisible(false);
 				}
 			});
+			map.markers.valueHasMutated();
 		}
 	};
 
@@ -349,7 +341,6 @@ var initMap = function() {
 	 * Apply bindings
 	 */
 	ko.applyBindings({
-		places: observables.places,
 		markers: map.markers,
 		showPlaceLocation: mapFunctions.showPlaceLocation,
 		autocomplete: mapFunctions.autocomplete,
