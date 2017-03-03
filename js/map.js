@@ -299,13 +299,20 @@ var initMap = function() {
 			return null;
 		},
 		filterMarkers: function(){
-			map.markers().forEach(function(marker){
-				marker.setVisible(true);
-				if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
-					marker.setVisible(false);
-				}
-			});
-			map.markers.valueHasMutated();
+			if(observables.selectedCategory() != undefined){
+				map.markers().forEach(function(marker){
+					marker.setVisible(true);
+					if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
+						marker.setVisible(false);
+					}
+				});
+				map.markers.valueHasMutated();
+			}
+			else{
+				map.markers().forEach(function(marker){
+					marker.setVisible(true);
+				});
+			}
 		}
 	};
 
