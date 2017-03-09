@@ -306,13 +306,13 @@ var initMap = function() {
 						marker.setVisible(false);
 					}
 				});
-				map.markers.valueHasMutated();
 			}
 			else{
 				map.markers().forEach(function(marker){
 					marker.setVisible(true);
 				});
 			}
+			map.markers.valueHasMutated();
 		}
 	};
 
