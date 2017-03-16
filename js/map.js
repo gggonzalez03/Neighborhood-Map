@@ -291,6 +291,8 @@ var initMap = function() {
 				makeMapMarkers(map, formatDataFromFoursquare(data, "search_results"));
 				setMapMarkers(map.map, map.markers());
 
+				map.visibleMarkers(map.markers());
+
 			})
 			.fail(function(error){
 				alert("Data failed to load. Try again after 3 minutes");
@@ -299,11 +301,13 @@ var initMap = function() {
 			return null;
 		},
 		filterMarkers: function(){
+			map.visibleMarkers([]);
 			if(observables.selectedCategory() != undefined){
 				map.markers().forEach(function(marker){
-					marker.setVisible(true);
-					if(!isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
-						marker.setVisible(false);
+					marker.setVisible(false);
+					if(isUnderCategory(observables.selectedCategory(), marker, observables.categories())){
+						marker.setVisible(true);
+						map.visibleMarkers.push(marker);
 					}
 				});
 				map.markers.valueHasMutated();
@@ -312,6 +316,7 @@ var initMap = function() {
 				map.markers().forEach(function(marker){
 					marker.setVisible(true);
 				});
+				map.visibleMarkers(map.markers());
 			}
 		}
 	};
@@ -329,6 +334,7 @@ var initMap = function() {
 	var map = {
 		map: new google.maps.Map($('#map')[0], mapSetup),
 		markers: ko.observableArray(),
+		visibleMarkers: ko.observableArray()
 	};
 	
 	observables.searchText();
@@ -349,6 +355,7 @@ var initMap = function() {
 	 */
 	ko.applyBindings({
 		markers: map.markers,
+		visibleMarkers: map.visibleMarkers,
 		showPlaceLocation: mapFunctions.showPlaceLocation,
 		autocomplete: mapFunctions.autocomplete,
 		search: mapFunctions.search,
