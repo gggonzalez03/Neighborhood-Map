@@ -26,8 +26,6 @@ function clearMapMarkers(markers){
 function makeMapMarkers(map, places){
 
 	map.markers([]);
-	var infoWindow = new google.maps.InfoWindow();
-
 	// This will create and store markers in markers array variable
 	// Each marker will be created with event listeners on click
 	/**
@@ -38,41 +36,36 @@ function makeMapMarkers(map, places){
 	for(var i = 0; i < places.length; i++){
 		places[i].animation = google.maps.Animation.DROP;
 		map.markers.push(new google.maps.Marker(places[i]));
-		/**
-		 * Sets the listener on current marker in the iteration
-		 * @param  {[type]} marker [description]
-		 * @param  {[type]} places [description]
-		 * @return {[type]}        [description]
-		 */
-		(function (marker, places) {
-    		marker.addListener('click', function(){
-    			infoWindow.setContent(
-    				((places.name != undefined) ? "<h5>" + places.name + "</h5>" : "")
-    				+ ((places.address != undefined) ? "<p>" + places.address + "</p>" : "")
-    				+ ((places.phone != undefined) ? "<p>" + places.phone + "</p>" : "")
-    				+ ((places.url != undefined) ? "<a href='" + places.url + "'>" + places.url + "</a>" : ""));
-		    	infoWindow.open(map, marker);
 
-		    	/**
-		    	 * Make the marker bounce on tap or click
-		    	 */
-		    	marker.setAnimation(google.maps.Animation.BOUNCE)
-
-		    	/**
-		    	 * Sets how long the marker should bounce
-		    	 */
-		    	setTimeout(function(){ marker.setAnimation(null); }, 1400);
-		    })
-	    })(map.markers()[i], places[i]);
+		(function (marker) {
+			marker.addListener('click', function(){
+    			showInfoWindow(map, marker);
+			}
+		)})(map.markers()[i]);
 	}
 }
 
-function showInfoWindow(markers, placeInfo){
-	markers.forEach(function(marker){
-		if(placeInfo.id == marker.id){
-			google.maps.event.trigger(marker, 'click');
-		}
-	});
+function showInfoWindow(map, placeInfo){
+	/**
+	 * Sets the listener on current marker in the iteration
+	 * @param  {[type]} marker [description]
+	 * @param  {[type]} places [description]
+	 * @return {[type]}        [description]
+	 */
+    map.infoWindow.setContent(
+    	((placeInfo.name != undefined) ? "<h5>" + placeInfo.name + "</h5>" : "")
+    	+ ((placeInfo.address != undefined) ? "<p>" + placeInfo.address + "</p>" : "")
+    	+ ((placeInfo.phone != undefined) ? "<p>" + placeInfo.phone + "</p>" : "")
+   		+ ((placeInfo.url != undefined) ? "<a href='" + placeInfo.url + "'>" + placeInfo.url + "</a>" : ""));
+   	map.infoWindow.open(map, placeInfo);
+	/**
+	 * Make the marker bounce on tap or click
+	*/
+	placeInfo.setAnimation(google.maps.Animation.BOUNCE)
+	/**
+	* Sets how long the marker should bounce
+	*/
+	setTimeout(function(){ placeInfo.setAnimation(null); }, 1400);
 }
 /**
  * Formats the data based on its purpose
@@ -258,7 +251,7 @@ var initMap = function() {
 	 */
 	var mapFunctions = {
 		showPlaceLocation: function(placeInfo){
-			showInfoWindow(map.markers(), placeInfo);
+			showInfoWindow(map, placeInfo);
 		},
 		autocomplete: function(){
 			if(observables.searchText() == undefined || observables.searchText() == ""){
@@ -334,7 +327,8 @@ var initMap = function() {
 	var map = {
 		map: new google.maps.Map($('#map')[0], mapSetup),
 		markers: ko.observableArray(),
-		visibleMarkers: ko.observableArray()
+		visibleMarkers: ko.observableArray(),
+		infoWindow : new google.maps.InfoWindow()
 	};
 	
 	observables.searchText();
