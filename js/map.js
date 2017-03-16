@@ -294,6 +294,7 @@ var initMap = function() {
 			return null;
 		},
 		filterMarkers: function(){
+			map.infoWindow.close();
 			map.visibleMarkers([]);
 			if(observables.selectedCategory() != undefined){
 				map.markers().forEach(function(marker){
