@@ -191,8 +191,9 @@ function foursquareSearch(query, centerCoordinate, categoryId){
 			client_secret: CLIENT_SECRET,
 			ll: centerCoordinate.lat + ", " + centerCoordinate.lng,
 			query: query,
+			intent: "checkin",
 			radius: 10000,
-			limit: 20,
+			limit: 50,
 			categoryId: categoryId,
 			v: "20170101"
 		},
@@ -226,7 +227,7 @@ function foursquareCategories(){
 /**
  * Initializes the map
  */
-var initMap = function() {
+function initMap(){
 
 	var self = this;
 
@@ -243,6 +244,23 @@ var initMap = function() {
 			lng: -122.0450548
 		}
 	}
+
+	/**
+	 * Map configurations
+	 * @type {Object}
+	 */
+	var mapSetup = {
+		center: new google.maps.LatLng(mapCenterSelect.san_jose),
+		zoom: 14,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
+
+	var map = {
+		map: new google.maps.Map($('#map')[0], mapSetup),
+		markers: ko.observableArray(),
+		visibleMarkers: ko.observableArray(),
+		infoWindow : new google.maps.InfoWindow()
+	};
 
 	/**
 	 * Drops the marker of the place tapped or clicked
@@ -267,6 +285,11 @@ var initMap = function() {
 			})
 			.fail(function(error){
 				alert("Data failed to load. Try again after 3 minutes");
+			});
+		},
+		categories: function(){
+			foursquareCategories().done(function(data){
+				observables.categories(data.response.categories);
 			});
 		},
 		search: function(){
@@ -314,37 +337,18 @@ var initMap = function() {
 			}
 		}
 	};
-
-	/**
-	 * Map configurations
-	 * @type {Object}
-	 */
-	var mapSetup = {
-		center: new google.maps.LatLng(mapCenterSelect.san_jose),
-		zoom: 12,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
-	};
-
-	var map = {
-		map: new google.maps.Map($('#map')[0], mapSetup),
-		markers: ko.observableArray(),
-		visibleMarkers: ko.observableArray(),
-		infoWindow : new google.maps.InfoWindow()
-	};
 	
-	observables.searchText();
-	observables.selectedCategory();
-
+	//observables.searchText();
+	//observables.selectedCategory();
 	mapFunctions.search();
+	mapFunctions.categories();
 
-	foursquareCategories().done(function(data){
-		observables.categories(data.response.categories);
-	});
 
+
+	// Knockout subscriptions
 	observables.searchText.subscribe(function(){
 		mapFunctions.autocomplete();
 	});
-	
 	/**
 	 * Apply bindings
 	 */
