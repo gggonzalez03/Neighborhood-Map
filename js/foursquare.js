@@ -58,6 +58,25 @@ function foursquareSearch(query, centerCoordinate, categoryId){
 	});
 }
 
+function foursquareVenuePhotos(venueId, photosLimit){
+	fs_url = "https://api.foursquare.com/v2/venues/"+ venueId +"/photos";
+
+	var CLIENT_ID = "ODYT4S01VH3UCI2FAVNCPQ5JJVGTDBXLTGUFSJBKTAY3EXGR";
+	var CLIENT_SECRET = "0MAO3USQG55PRI4A0UNUIJVQE51CNN55A5HJBBXUZIW5OGIS";
+
+	return $.ajax({
+		url: fs_url,
+		data: {
+			client_id: CLIENT_ID,
+			client_secret: CLIENT_SECRET,
+			limit: photosLimit,
+			v: "20170101"
+		},
+		dataType: "jsonp",
+		cache: true
+	});
+}
+
 /**
  * Request possible categories from foursquare
  * @return {object} Promise object that holds the data fro foursquare

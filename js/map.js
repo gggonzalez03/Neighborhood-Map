@@ -54,18 +54,32 @@ function showInfoWindow(map, placeInfo){
 	function convertUndefined(data){
 		return (data != undefined) ? data: "";
 	}
-	/**
-	 * Sets the listener on the placeInfo marker
-	 * @param  {[type]} marker [description]
-	 * @param  {[type]} places [description]
-	 * @return {[type]}        [description]
-	 */
-    map.infoWindow.setContent(
-    	"<h5>" + convertUndefined(placeInfo.name) + "</h5>"
-    	+"<p>" + convertUndefined(placeInfo.address) + "</p>"
-    	+"<p>" + convertUndefined(placeInfo.phone) + "</p>"
-   		+"<a href='" + convertUndefined(placeInfo.url) + "'>" + convertUndefined(placeInfo.url) + "</a>");
-   	map.infoWindow.open(map, placeInfo);
+
+	foursquareVenuePhotos(placeInfo.id, 5)
+	.done(function(data){
+		var fsphotos = data.response.photos.items;
+		var photosURLs = [];
+
+		fsphotos.forEach(function(photo){
+			photosURLs.push(photo.prefix + "50x50" + photo.suffix);
+		});
+
+		placeInfo.photos = photosURLs;
+
+		/**
+		* Sets the listener on the placeInfo marker
+		* @param  {[type]} marker [description]
+		* @param  {[type]} places [description]
+		* @return {[type]}        [description]
+		*/
+		map.infoWindow.setContent(
+			"<img src='" + convertUndefined(placeInfo.photos[0]) + "'>"
+		    +"<h5>" + convertUndefined(placeInfo.name) + "</h5>"
+		    +"<p>" + convertUndefined(placeInfo.address) + "</p>"
+		    +"<p>" + convertUndefined(placeInfo.phone) + "</p>"
+		   	+"<a href='" + convertUndefined(placeInfo.url) + "'>" + convertUndefined(placeInfo.url) + "</a>");
+	   	map.infoWindow.open(map, placeInfo);
+	});
 	/**
 	 * Make the marker bounce on tap or click
 	*/
