@@ -47,16 +47,24 @@ function makeMapMarkers(map, places){
 
 function showInfoWindow(map, placeInfo){
 	/**
+	 * Returns an empty string if the data passed is undefined
+	 * @param  {string} data Variable to be checked if undefined
+	 * @return {string}      Either an empty string or the same data string
+	 */
+	function convertUndefined(data){
+		return (data != undefined) ? data: "";
+	}
+	/**
 	 * Sets the listener on the placeInfo marker
 	 * @param  {[type]} marker [description]
 	 * @param  {[type]} places [description]
 	 * @return {[type]}        [description]
 	 */
     map.infoWindow.setContent(
-    	((placeInfo.name != undefined) ? "<h5>" + placeInfo.name + "</h5>" : "")
-    	+ ((placeInfo.address != undefined) ? "<p>" + placeInfo.address + "</p>" : "")
-    	+ ((placeInfo.phone != undefined) ? "<p>" + placeInfo.phone + "</p>" : "")
-   		+ ((placeInfo.url != undefined) ? "<a href='" + placeInfo.url + "'>" + placeInfo.url + "</a>" : ""));
+    	"<h5>" + convertUndefined(placeInfo.name) + "</h5>"
+    	+"<p>" + convertUndefined(placeInfo.address) + "</p>"
+    	+"<p>" + convertUndefined(placeInfo.phone) + "</p>"
+   		+"<a href='" + convertUndefined(placeInfo.url) + "'>" + convertUndefined(placeInfo.url) + "</a>");
    	map.infoWindow.open(map, placeInfo);
 	/**
 	 * Make the marker bounce on tap or click
