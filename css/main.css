@@ -9,6 +9,7 @@
 		padding: 0;
 		overflow: hidden;
 	}
+
 	.input-group-addon{
 		padding: 0;
 		height: 100%
@@ -52,6 +53,16 @@
 	table.table.table-hover td{
 		width: 100vw;
 	}
+
+	/*InfoWindows*/
+	.gm-style-iw {
+		margin: 0px;
+	}
+
+	#iw-image
+	{
+		display: none;
+	}
 }
 
 /* Extra Small Devices, Phones */ 
@@ -63,6 +74,16 @@
 @media only screen and (min-width : 768px) {
 	#searchresults > table{
 	   height: 95vh;
+	}
+
+	/*InfoWindows*/
+	#iw-image
+	{
+		display: block;
+	}
+
+	.img-responsive {
+	    width: 100%;
 	}
 }
 

@@ -61,7 +61,7 @@ function showInfoWindow(map, placeInfo){
 		var photosURLs = [];
 
 		fsphotos.forEach(function(photo){
-			photosURLs.push(photo.prefix + "50x50" + photo.suffix);
+			photosURLs.push(photo.prefix + "500x500" + photo.suffix);
 		});
 
 		placeInfo.photos = photosURLs;
@@ -73,11 +73,14 @@ function showInfoWindow(map, placeInfo){
 		* @return {[type]}        [description]
 		*/
 		map.infoWindow.setContent(
-			"<img src='" + convertUndefined(placeInfo.photos[0]) + "'>"
-		    +"<h5>" + convertUndefined(placeInfo.name) + "</h5>"
+			"<div id='iw-image' class='col-xs-3 col-md-3'><img src='" + convertUndefined(placeInfo.photos[0]) + "' class='img-responsive'></div>"
+			+"<div class='col-xs-9'>"
+			+"<h5>" + convertUndefined(placeInfo.name) + "</h5>"
 		    +"<p>" + convertUndefined(placeInfo.address) + "</p>"
 		    +"<p>" + convertUndefined(placeInfo.phone) + "</p>"
-		   	+"<a href='" + convertUndefined(placeInfo.url) + "'>" + convertUndefined(placeInfo.url) + "</a>");
+		   	+"<a href='" + convertUndefined(placeInfo.url) + "'>" + convertUndefined(placeInfo.url) + "</a>"
+		   	+"</div>"
+		);
 	   	map.infoWindow.open(map, placeInfo);
 	});
 	/**
