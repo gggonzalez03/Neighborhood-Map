@@ -159,6 +159,9 @@ function initMap(){
 		categories: function(){
 			foursquareCategories().done(function(data){
 				observables.categories(data.response.categories);
+			})
+			.fail(function(error){
+				alert("Data failed to load. Try again after 3 minutes");
 			});
 		},
 		search: function(){
@@ -233,4 +236,8 @@ function initMap(){
 		selectedCategory: observables.selectedCategory,
 		suggestcompletion: observables.suggestcompletion
 	});
+};
+
+function mapError(){
+	alert("Could not load the map. Please try again after 3 minutes.");
 };
